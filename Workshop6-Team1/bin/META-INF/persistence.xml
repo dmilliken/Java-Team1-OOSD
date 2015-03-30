@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+	<persistence-unit name="Workshop6-Team1" transaction-type="RESOURCE_LOCAL">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<class>com.java.team1.travelexperts.Agency</class>
+		<class>com.java.team1.travelexperts.Agent</class>
+		<class>com.java.team1.travelexperts.Customer</class>
+		<class>com.java.team1.travelexperts.Package</class>
+		<class>com.java.team1.travelexperts.Product</class>
+		<class>com.java.team1.travelexperts.ProductsSupplier</class>
+		<class>com.java.team1.travelexperts.Supplier</class>
+		<properties>
+			<property name="eclipselink.target-server" value="None"/>
+		</properties>
+	</persistence-unit>
+</persistence>
