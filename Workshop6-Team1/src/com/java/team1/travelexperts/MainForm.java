@@ -21,6 +21,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.factories.FormFactory;
+import javax.swing.JTabbedPane;
+import javax.swing.JComboBox;
 
 @SuppressWarnings("serial")
 public class MainForm extends JFrame {
@@ -86,15 +88,19 @@ public class MainForm extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JPanel panelAgents = new JPanel();
-		panelAgents.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panelAgents.setBounds(180, 57, 824, 525);
-		contentPane.add(panelAgents);
-		panelAgents.setLayout(null);
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBounds(175, 51, 798, 518);
+		tabbedPane.setFont( new Font( "Tahoma", Font.BOLD, 14 ) );
+		contentPane.add(tabbedPane);
+		
+		JPanel tabAgents = new JPanel();
+		tabbedPane.addTab("Agents", null, tabAgents, null);
+		tabAgents.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		tabAgents.setLayout(null);
 		
 		Panel PanelAgentData = new Panel();
 		PanelAgentData.setBounds(10, 10, 390, 493);
-		panelAgents.add(PanelAgentData);
+		tabAgents.add(PanelAgentData);
 		PanelAgentData.setLayout(null);
 		
 		JLabel lblAgents = new JLabel("Agents");
@@ -136,61 +142,71 @@ public class MainForm extends JFrame {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,}));
 		
+		JLabel lblAgentId = new JLabel("Agent ID:");
+		lblAgentId.setFont(new Font("Tahoma", Font.BOLD, 16));
+		panelAgentTextFields.add(lblAgentId, "2, 2, right, default");
+		
+		JComboBox comboBox = new JComboBox();
+		panelAgentTextFields.add(comboBox, "6, 2, fill, default");
+		
 		JLabel lblFirstName = new JLabel("First Name:");
 		lblFirstName.setFont(new Font("Tahoma", Font.BOLD, 16));
-		panelAgentTextFields.add(lblFirstName, "2, 2, right, default");
+		panelAgentTextFields.add(lblFirstName, "2, 4, right, default");
 		
 		txtFirstName = new JTextField();
 		txtFirstName.setColumns(10);
-		panelAgentTextFields.add(txtFirstName, "6, 2, fill, default");
+		panelAgentTextFields.add(txtFirstName, "6, 4, fill, default");
 		
 		JLabel lblMiddleInitial = new JLabel("Middle Initial:");
 		lblMiddleInitial.setFont(new Font("Tahoma", Font.BOLD, 16));
-		panelAgentTextFields.add(lblMiddleInitial, "2, 4, right, default");
+		panelAgentTextFields.add(lblMiddleInitial, "2, 6, right, default");
 		
 		txtMiddleInitial = new JTextField();
 		txtMiddleInitial.setColumns(10);
-		panelAgentTextFields.add(txtMiddleInitial, "6, 4, fill, default");
+		panelAgentTextFields.add(txtMiddleInitial, "6, 6, fill, default");
 		
 		JLabel lblLastName = new JLabel("Last Name:");
 		lblLastName.setFont(new Font("Tahoma", Font.BOLD, 16));
-		panelAgentTextFields.add(lblLastName, "2, 6, right, default");
+		panelAgentTextFields.add(lblLastName, "2, 8, right, default");
 		
 		txtLastName = new JTextField();
 		txtLastName.setColumns(10);
-		panelAgentTextFields.add(txtLastName, "6, 6, fill, default");
+		panelAgentTextFields.add(txtLastName, "6, 8, fill, default");
 		
 		JLabel lblBusinessPhone = new JLabel("Business Phone:");
 		lblBusinessPhone.setFont(new Font("Tahoma", Font.BOLD, 16));
-		panelAgentTextFields.add(lblBusinessPhone, "2, 8");
+		panelAgentTextFields.add(lblBusinessPhone, "2, 10");
 		
 		txtBusPhone = new JTextField();
 		txtBusPhone.setColumns(10);
-		panelAgentTextFields.add(txtBusPhone, "6, 8, fill, default");
+		panelAgentTextFields.add(txtBusPhone, "6, 10, fill, default");
 		
 		JLabel lblEmail = new JLabel("Email:");
 		lblEmail.setFont(new Font("Tahoma", Font.BOLD, 16));
-		panelAgentTextFields.add(lblEmail, "2, 10, right, default");
+		panelAgentTextFields.add(lblEmail, "2, 12, right, default");
 		
 		txtEmail = new JTextField();
 		txtEmail.setColumns(10);
-		panelAgentTextFields.add(txtEmail, "6, 10, fill, default");
+		panelAgentTextFields.add(txtEmail, "6, 12, fill, default");
 		
 		JLabel lblPosition = new JLabel("Position:");
 		lblPosition.setFont(new Font("Tahoma", Font.BOLD, 16));
-		panelAgentTextFields.add(lblPosition, "2, 12, right, default");
+		panelAgentTextFields.add(lblPosition, "2, 14, right, default");
 		
 		txtPosition = new JTextField();
 		txtPosition.setColumns(10);
-		panelAgentTextFields.add(txtPosition, "6, 12, fill, default");
+		panelAgentTextFields.add(txtPosition, "6, 14, fill, default");
 		
 		JLabel lblAgencyId = new JLabel("Agency ID:");
 		lblAgencyId.setFont(new Font("Tahoma", Font.BOLD, 16));
-		panelAgentTextFields.add(lblAgencyId, "2, 14, right, default");
+		panelAgentTextFields.add(lblAgencyId, "2, 16, right, default");
 		
 		txtAgencyID = new JTextField();
-		panelAgentTextFields.add(txtAgencyID, "6, 14, fill, default");
+		panelAgentTextFields.add(txtAgencyID, "6, 16, fill, default");
 		txtAgencyID.setColumns(10);
+		
+		JPanel tabPackages = new JPanel();
+		tabbedPane.addTab("Packages", null, tabPackages, null);
 		
 		JPanel panelButtons = new JPanel();
 		panelButtons.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -230,22 +246,14 @@ public class MainForm extends JFrame {
 		
 		JPanel panelViews = new JPanel();
 		panelViews.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panelViews.setBounds(12, 10, 992, 41);
+		panelViews.setBounds(12, 10, 992, 559);
 		contentPane.add(panelViews);
 		panelViews.setLayout(null);
 		
-		JLabel lblSelectATable = new JLabel("Select a Table to View or Edit:");
+		JLabel lblSelectATable = new JLabel("Welcome! Select a Table to View or Edit:");
 		lblSelectATable.setFont(new Font("Tahoma", Font.BOLD, 16));
-		lblSelectATable.setBounds(12, 10, 286, 16);
+		lblSelectATable.setBounds(12, 12, 377, 16);
 		panelViews.add(lblSelectATable);
-		
-		JButton btnAgents = new JButton("Agents");
-		btnAgents.setBounds(270, 5, 97, 25);
-		panelViews.add(btnAgents);
-		
-		JButton btnPackages = new JButton("Packages");
-		btnPackages.setBounds(374, 5, 97, 25);
-		panelViews.add(btnPackages);
 		
 		JLabel lblSearch = new JLabel("Search: ");
 		lblSearch.setFont(new Font("Tahoma", Font.BOLD, 16));

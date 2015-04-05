@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+                                         "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+ <session-factory> 
+  <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+  <property name="hibernate.connection.url">jdbc:mysql://localhost:3306</property>
+  <property name="hibernate.default_schema">travelexperts</property>
+  <property name="connection.username">root</property>
+  <property name="connection.password"></property>
+  <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+  <property name="hibernate.show_sql">true</property>
+  <property name="packagesToScan">com.java.team1.travelexperts</property>
+  <property name="current_session_context_class">org.hibernate.context.internal.ThreadLocalSessionContext</property>
+  <mapping class="com.java.team1.travelexperts.Agent"></mapping>
+  <mapping class="com.java.team1.travelexperts.Customer"></mapping>
+  <mapping class="com.java.team1.travelexperts.Package"></mapping>
+  <mapping class="com.java.team1.travelexperts.Product"></mapping>
+  <mapping class="com.java.team1.travelexperts.ProductsSupplier"></mapping>
+  <mapping class="com.java.team1.travelexperts.Supplier"></mapping>
+    
+ </session-factory>
+</hibernate-configuration>
