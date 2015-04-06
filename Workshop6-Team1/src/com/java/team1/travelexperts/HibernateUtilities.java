@@ -37,6 +37,15 @@ public class HibernateUtilities {
 	        return sessionFactory;
 	    } 
 
+	    public static Session getSession()
+	    {
+	    	Configuration configuration = new Configuration();
+            configuration.configure("hibernate.cfg.xml");
+            StandardServiceRegistryBuilder ssrb = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
+            SessionFactory sessionFactory = configuration.buildSessionFactory(ssrb.build());
+            Session session = sessionFactory.openSession();
+            return session;
+	    }
 	    public void testConnection() throws Exception 
 	    {
 
