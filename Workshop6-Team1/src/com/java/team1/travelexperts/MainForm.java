@@ -67,6 +67,7 @@ public class MainForm extends JFrame {
 	private JButton btnEdit;
 	private JButton btnDelete;
 	private JButton btnSave;
+	private int selectedTab;
 
 	/**
 	 * Launch the application.
@@ -451,7 +452,7 @@ public class MainForm extends JFrame {
 				// this is the event handler for btnAdd
 				
 				//check to see which tab is open 
-				int selectedTab = tabbedPane.getSelectedIndex();
+				selectedTab = tabbedPane.getSelectedIndex();
 				//System.out.println(selectedTab);
 				// Tab 0 is the agent tab
 				// Tab 1 is the packages tab
@@ -461,19 +462,17 @@ public class MainForm extends JFrame {
 					// set the agent form fields to enabled
 					enableAgentFormFields();
 					
-					// disable the other sidebar buttons
-					disableButtons();
+					
 				}
 				else if (selectedTab == 1) // Packages Tab
 				{
 					// set the packages form fields to enabled
 					enablePackagesFormFields();
 					
-					// disable the other sidebar buttons
-					disableButtons();
-				}
-				
-			}
+				} //end elseif
+				//enable the save button
+				btnSave.setEnabled(true);
+			} //end mouseclick
 		});
 		btnAdd.setFont(new Font("Tahoma", Font.BOLD, 14));
 		btnAdd.setBounds(23, 59, 101, 40);
@@ -492,6 +491,29 @@ public class MainForm extends JFrame {
 		panelButtons.add(btnDelete);
 		
 		btnSave = new JButton("Save");
+		btnSave.addMouseListener(new MouseAdapter() 
+		{
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				selectedTab = tabbedPane.getSelectedIndex();
+				
+				if (selectedTab == 0) //Agents Tab
+				{
+					// validate entries
+					
+					// call the Save Agent to DB method
+					
+				}
+				else if (selectedTab == 1) // Packages Tab
+				{
+					// validate entries
+					
+					// call the Save Package to DB method
+					
+				} //end elseif
+			} //end mouse click 
+		});
 		btnSave.setEnabled(false);
 		btnSave.setFont(new Font("Tahoma", Font.BOLD, 14));
 		btnSave.setBounds(23, 218, 101, 40);
@@ -569,6 +591,7 @@ public class MainForm extends JFrame {
 	
 	protected void enablePackagesFormFields() 
 	{
+		System.out.println("in the enablePackagesFormFields() method");
 		// method to turn the package form fields to enabled
 		// trigger when the user selects "Add" while on the Packages Tab
 		cboPkgID.setEditable(true); 
