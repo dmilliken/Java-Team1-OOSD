@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 5, 2015 4:20:57 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.java.team1.travelexperts.Agent" table="AGENT">
+        <id name="agentId" type="int">
+            <column name="AGENTID" />
+            <generator class="assigned" />
+        </id>
+        <property name="agencyId" type="int">
+            <column name="AGENCYID" />
+        </property>
+        <property name="agtBusPhone" type="java.lang.String">
+            <column name="AGTBUSPHONE" />
+        </property>
+        <property name="agtEmail" type="java.lang.String">
+            <column name="AGTEMAIL" />
+        </property>
+        <property name="agtFirstName" type="java.lang.String">
+            <column name="AGTFIRSTNAME" />
+        </property>
+        <property name="agtLastName" type="java.lang.String">
+            <column name="AGTLASTNAME" />
+        </property>
+        <property name="agtMiddleInitial" type="java.lang.String">
+            <column name="AGTMIDDLEINITIAL" />
+        </property>
+        <property name="agtPosition" type="java.lang.String">
+            <column name="AGTPOSITION" />
+        </property>
+        <list name="customers" inverse="false" table="CUSTOMER" lazy="true">
+            <key>
+                <column name="AGENTID" />
+            </key>
+            <list-index></list-index>
+            <one-to-many class="com.java.team1.travelexperts.Customer" />
+        </list>
+    </class>
+<!--     <query name="findAgentByLastName">
+    	<![CDATA[from Agent a where a.agtLastName = :agtLastName]]>
+    </query> -->
+    
+</hibernate-mapping>
