@@ -1,6 +1,7 @@
 package com.java.team1.travelexperts;
 
 import java.io.Serializable;
+
 import javax.persistence.*;
 
 
@@ -98,4 +99,9 @@ public class Agency implements Serializable {
 		this.agncyProv = agncyProv;
 	}
 
+	// Override toString Method
+		@Override
+		public String toString() {
+		    return getAgncyCity();
+		}
 }

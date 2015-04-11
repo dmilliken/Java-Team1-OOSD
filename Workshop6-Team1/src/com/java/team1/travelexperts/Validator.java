@@ -7,5 +7,5 @@ package com.java.team1.travelexperts;
 public class Validator 
 
 {
-	
+	 
 }

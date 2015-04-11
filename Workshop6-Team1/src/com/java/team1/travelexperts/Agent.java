@@ -167,6 +167,12 @@ public class Agent implements Serializable
 
 		return customer;
 	} 
+	
+	// Override toString Method
+	@Override
+	public String toString() {
+	    return getAgtFirstName() + " " + getAgtLastName();
+	}
 
 	// This method will update an agent object and save to DB
 	// pass form values into this method to update a row in the Agent take

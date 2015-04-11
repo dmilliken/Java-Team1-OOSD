@@ -40,13 +40,20 @@ import javax.swing.JLayeredPane;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.List;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
 
 @SuppressWarnings("serial")
 public class MainForm extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField textField;
-	private JComboBox cboAgentID;
+	private JComboBox cboSelectAgent;
 	private JTextField txtBusPhone;
 	private JTextField txtFirstName;
 	private JTextField txtMiddleInitial;
@@ -68,6 +75,7 @@ public class MainForm extends JFrame {
 	private JButton btnDelete;
 	private JButton btnSave;
 	private int selectedTab;
+	Session session;
 
 	/**
 	 * Launch the application.
@@ -91,6 +99,7 @@ public class MainForm extends JFrame {
 	/**
 	 * Create the frame.
 	 */
+	@SuppressWarnings("unchecked")
 	public MainForm() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1055, 640);
@@ -177,23 +186,51 @@ public class MainForm extends JFrame {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,}));
 		
-		JLabel lblAgentId = new JLabel("Agent ID:");
+		JLabel lblAgentId = new JLabel("Select Agent:");
 		lblAgentId.setFont(new Font("Tahoma", Font.BOLD, 16));
 		panelAgentTextFields.add(lblAgentId, "2, 2, right, default");
 		
-		cboAgentID = new JComboBox();
-		cboAgentID.setEnabled(false);
-		cboAgentID.addItemListener(new ItemListener() {
+		// fill the list allAgents with data from the agent class
+
+		List<?> allAgentsList = getAllTravelAgents();
+		
+		cboSelectAgent = new JComboBox(allAgentsList.toArray());
+		cboSelectAgent.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) 
 			{
 				// when the user selects an agent, run this method 
+				
+				//get the selected agent object and fill textboxes with data 
+				System.out.println(cboSelectAgent.getSelectedItem());
+				Agent a = (Agent) cboSelectAgent.getSelectedItem();
+				
+				//System.out.println("Name is " + a.getAgtFirstName());
+				
+				// fill the textboxes with the data
+				txtFirstName.setText(a.getAgtFirstName());
+				txtMiddleInitial.setText(a.getAgtMiddleInitial());
+				txtLastName.setText(a.getAgtLastName());
+				txtBusPhone.setText(a.getAgtBusPhone());
+				txtPosition.setText(a.getAgtPosition());
+				txtEmail.setText(a.getAgtEmail());
+				cboAgencyID.setSelectedIndex(a.getAgencyId()-1);
+				
+				// get data for agencies combobox
+				//cboAgencyID.setModel(getAllTravelAgencies().toArray());
+				//int agencyID = a.getAgencyId();
+				//List<?> allAgencies = getAllTravelAgencies();
+				
+				// info we'll need later for saving the agency to the agent object 
+				System.out.println("Agency Selected Index is " + cboAgencyID.getSelectedIndex());
+				System.out.println("Agency Selected Item is " + cboAgencyID.getSelectedItem());
+				//System.out.println("Agency Selected Object is " + cboAgencyID.getSelectedObjects().toString());
 				
 				// enable the sidebar Edit/Save/Delete buttons
 				enableButtons();
 			}
 
 		});
-		panelAgentTextFields.add(cboAgentID, "6, 2, fill, default");
+		panelAgentTextFields.add(cboSelectAgent, "6, 2, fill, default");
 		
 		JLabel lblFirstName = new JLabel("First Name:");
 		lblFirstName.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -249,12 +286,11 @@ public class MainForm extends JFrame {
 		txtPosition.setColumns(10);
 		panelAgentTextFields.add(txtPosition, "6, 14, fill, default");
 		
-		JLabel lblAgencyId = new JLabel("Agency ID:");
+		JLabel lblAgencyId = new JLabel("Agency:");
 		lblAgencyId.setFont(new Font("Tahoma", Font.BOLD, 16));
 		panelAgentTextFields.add(lblAgencyId, "2, 16, right, default");
 		
-		cboAgencyID = new JComboBox();
-		cboAgencyID.setEnabled(false);
+		cboAgencyID = new JComboBox(getAllTravelAgencies().toArray());
 		panelAgentTextFields.add(cboAgencyID, "6, 16, fill, default");
 		
 		JPanel tabPackages = new JPanel();
@@ -479,6 +515,35 @@ public class MainForm extends JFrame {
 		panelButtons.add(btnAdd);
 		
 		btnEdit = new JButton("Edit");
+		btnEdit.addMouseListener(new MouseAdapter() 
+		{
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{
+				//event handler for the edit button
+				
+				//detect which tab is open
+				selectedTab = tabbedPane.getSelectedIndex();
+				//System.out.println(selectedTab);
+				// Tab 0 is the agent tab
+				// Tab 1 is the packages tab
+				
+				if (selectedTab == 0) //Agents Tab
+				{
+					// set the agent form fields to enabled
+					enableAgentFormFields();
+					
+					
+				}
+				else if (selectedTab == 1) // Packages Tab
+				{
+					// set the packages form fields to enabled
+					enablePackagesFormFields();
+					
+				} //end elseif
+				
+			}
+		});
 		btnEdit.setEnabled(false);
 		btnEdit.setFont(new Font("Tahoma", Font.BOLD, 14));
 		btnEdit.setBounds(23, 112, 101, 40);
@@ -579,7 +644,7 @@ public class MainForm extends JFrame {
 		System.out.println("in the enableAgentFormFields() method");
 		// method to turn the agent form fields to enabled
 		// trigger when the user selects "Add" while on the Agents Tab
-		cboAgentID.setEnabled(true);
+		cboSelectAgent.setEnabled(true);
 		txtFirstName.setEditable(true);
 		txtMiddleInitial.setEditable(true);
 		txtLastName.setEditable(true);
@@ -587,6 +652,7 @@ public class MainForm extends JFrame {
 		txtEmail.setEditable(true);
 		txtPosition.setEditable(true);
 		cboAgencyID.setEnabled(true);
+		//cboAgencyID.setEditable(true);
 	}
 	
 	protected void enablePackagesFormFields() 
@@ -601,5 +667,40 @@ public class MainForm extends JFrame {
 		txtDescription.setEditable(true);
 		txtPrice.setEditable(true);
 		txtCommission.setEditable(true);
+		
 	}
+	
+	protected List<?> getAllTravelAgencies()
+	{
+		//begin session and transaction
+		session = HibernateUtilities.getSession();
+
+		Query queryFindAllAgencies = session.getNamedQuery("Agency.findAll");
+		List<?> allAgenciesList = queryFindAllAgencies.list();
+		
+		if (!allAgenciesList.isEmpty()) 
+		{
+			// if the list of agents is nonempty, loop through it
+			for (int i = 0; i < allAgenciesList.size(); i++) 
+			{
+				Agency agcy = (Agency) allAgenciesList.get(i);
+				System.out.println("Agency # " + agcy.getAgencyId() + " is in " + agcy.getAgncyCity());
+			}
+		}
+		session.close();
+		return allAgenciesList;	
+	}
+	protected List<?> getAllTravelAgents()
+	{
+		// refactor this section if time permits 
+		//begin session and transaction
+		session = HibernateUtilities.getSession();
+
+		Query queryFindAllAgents = session.getNamedQuery("Agent.findAll");
+		List<?> allAgentsList = queryFindAllAgents.list();
+
+		session.close();
+		return allAgentsList;	
+	}
+
 }

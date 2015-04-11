@@ -58,9 +58,13 @@ public class TestSelectWithHibernate
 			for (int i = 0; i < allAgents.size(); i++) 
 			{
 				Agent a = (Agent) allAgents.get(i);
-				System.out.println("Agent number "+ a.getAgentId() + " is " + a.getAgtFirstName() + " " + a.getAgtLastName());
+				//System.out.println("Agent number "+ a.getAgentId() + " is " + a.getAgtFirstName() + " " + a.getAgtLastName());
 			}
 		}
+		
+		System.out.println("Overriding toString for Agent: ");
+		//System.out.println(allAgents.get(0)); //this prints a bunch of garbage
+		System.out.println(allAgents.get(0).toString()); //this is what we want to put in the JcomboBox
 						
 		// the following code gets an agent by ID and then gets a list of all that agent's customers. 
 		Query query = session.getNamedQuery("findAgentByID")
@@ -85,7 +89,10 @@ public class TestSelectWithHibernate
 			//Customer anotherCustomer = customers.get()
 			//System.out.println(oneCustomer.getCustomerId() + " " + oneCustomer.getCustFirstName() );
 		}
-
+		
+		
+		
+		
 		// fetch an agent and update their record
 		session.getTransaction().commit();
 		session.close();
