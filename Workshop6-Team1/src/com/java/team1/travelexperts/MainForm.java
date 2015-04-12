@@ -195,6 +195,7 @@ public class MainForm extends JFrame {
 		List<?> allAgentsList = getAllTravelAgents();
 		
 		cboSelectAgent = new JComboBox(allAgentsList.toArray());
+		//cboSelectAgent.insertItemAt("", 0);
 		cboSelectAgent.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) 
 			{
@@ -213,7 +214,7 @@ public class MainForm extends JFrame {
 				txtBusPhone.setText(a.getAgtBusPhone());
 				txtPosition.setText(a.getAgtPosition());
 				txtEmail.setText(a.getAgtEmail());
-				cboAgencyID.setSelectedIndex(a.getAgencyId()-1);
+				cboAgencyID.setSelectedIndex(a.getAgencyId());
 				
 				// get data for agencies combobox
 				//cboAgencyID.setModel(getAllTravelAgencies().toArray());
@@ -497,7 +498,8 @@ public class MainForm extends JFrame {
 				{
 					// set the agent form fields to enabled
 					enableAgentFormFields();
-					
+					// set the selected Agent to null
+					cboSelectAgent.setSelectedIndex(-1);
 					
 				}
 				else if (selectedTab == 1) // Packages Tab
@@ -688,6 +690,10 @@ public class MainForm extends JFrame {
 			}
 		}
 		session.close();
+		
+		//insert a null agency
+		allAgenciesList.add(0,null);
+		
 		return allAgenciesList;	
 	}
 	protected List<?> getAllTravelAgents()
@@ -700,6 +706,12 @@ public class MainForm extends JFrame {
 		List<?> allAgentsList = queryFindAllAgents.list();
 
 		session.close();
+		
+		//insert a null agent
+		//Agent nullAgent = new Agent();
+		
+		allAgentsList.add(0, null);
+		
 		return allAgentsList;	
 	}
 
