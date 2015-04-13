@@ -45,8 +45,15 @@ public class Validator<decimal>
              public static boolean isValidPrice(JTextComponent p,JTextComponent c, String PriceFieldName, String CommFieldName)
              {                  
                     try {
-                           int i =Integer.parseInt(c.getText());
-                           return true;                    
+                           double price =Double.parseDouble(p.getText());
+                           double comm =Double.parseDouble(c.getText());
+                           if (price >= comm)
+                        	   return true;     
+                           else
+                           {
+                               showMessage(c,CommFieldName+" should be less than " + PriceFieldName +".");
+                        	   return false;
+                            }
                     } catch (NumberFormatException e) {
                              showMessage(c,CommFieldName+" should be less than " + PriceFieldName +".");
                              c.requestFocusInWindow();

@@ -1,5 +1,7 @@
 package com.java.team1.travelexperts;
 
+// Darcie and Garima
+
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -43,6 +45,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -602,6 +605,22 @@ public class MainForm extends JFrame {
 		panelButtons.add(btnEdit);
 		
 		btnDelete = new JButton("Delete");
+		btnDelete.addMouseListener(new MouseAdapter() 
+		{
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				// Event handler for the delete button
+				
+				// check the tab
+				
+				// if it's the agent tab, check if the selected agent has customers
+				// if no, delete the agent/inactive
+				// if yes, assign their customers to Agent # 1
+				// or pop up a menu and let them pick (so make a new form to do this part) 
+				
+			}
+		});
 		btnDelete.setEnabled(false);
 		btnDelete.setFont(new Font("Tahoma", Font.BOLD, 14));
 		btnDelete.setBounds(23, 165, 101, 40);
@@ -653,7 +672,7 @@ public class MainForm extends JFrame {
 							JOptionPane.showMessageDialog(tabbedPane, "Oops, there was an error saving that agent. ");
 						}
 					} //end new agent if
-					else
+					else //edit existing agent
 					{
 						
 						// then we are editing an existing agent 
@@ -713,7 +732,41 @@ public class MainForm extends JFrame {
 						)
 					{
 						System.out.println("Valid!");
-						// then try to save the package to the database
+						// valid, so now determine if it's a new or existing package 
+						if (cboSelectPackage.getSelectedIndex() == -1)
+						{
+							// create new package
+							Package newPkg = new Package();
+							if (newPkg.createPackage(txtPkgname.getText(),dtStartDate.getDate(), dtEndDate.getDate(), txtDescription.getText(),BigDecimal.valueOf(Double.parseDouble(txtPrice.getText())),BigDecimal.valueOf(Double.parseDouble(txtCommission.getText()))))
+							{
+								JOptionPane.showMessageDialog(tabbedPane, "Successfully created the package! ");
+								
+								disablePackageForm();
+								
+								disableButtons();
+							}
+						}
+						else
+						{
+							// update existing package
+							// get the current agent 
+							Package pkg = (Package) cboSelectPackage.getSelectedItem();
+							
+							if (pkg.updatePackage(pkg.getPackageId(),txtPkgname.getText(),dtStartDate.getDate(), dtEndDate.getDate(), txtDescription.getText(),BigDecimal.valueOf(Double.parseDouble(txtPrice.getText())),BigDecimal.valueOf(Double.parseDouble(txtCommission.getText()))))
+							{
+								JOptionPane.showMessageDialog(tabbedPane, "Successfully saved the package! ");
+								
+								disablePackageForm();
+								
+								disableButtons();
+							}
+							else
+							{
+								JOptionPane.showMessageDialog(tabbedPane, "Oops, there was an error when saving the package. ");
+							}
+
+						}
+						
 						
 					}
 					else
@@ -724,6 +777,8 @@ public class MainForm extends JFrame {
 					
 				} //end elseif
 			} //end mouse click 
+
+			
 		});
 		btnSave.setEnabled(false);
 		btnSave.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -905,6 +960,29 @@ public class MainForm extends JFrame {
 		allPkgList.add(0, null);
 		
 		return allPkgList;	
+	}
+	
+	protected void disablePackageForm()
+	{
+		txtPkgname.setEditable(false);
+		dtStartDate.setEnabled(false);
+		dtEndDate.setEnabled(false);
+		txtCommission.setEditable(false);
+		txtPrice.setEditable(false);
+		txtDescription.setEditable(false);
+	}
+	
+	protected void resetPackageForm()
+	{
+		// after adding, saving, or deleting, call this method to reset the form
+		
+		//cboSelectAgent.setSelectedItem(new Agent());
+		txtPkgname.setText("");
+		dtStartDate.setDate(null);
+		dtEndDate.setDate(null);
+		txtCommission.setText("");
+		txtPrice.setText("");
+		txtDescription.setText("");
 	}
 
 }
