@@ -179,8 +179,6 @@ public class Agent implements Serializable
 	// Adapted from http://www.tutorialspoint.com/hibernate/hibernate_examples.htm
 	public boolean updateAgent(int agentId, String agtFirstName, String agtMiddleInitial, String agtLastName, String agtBusPhone, String agtEmail, String position, int agencyId)
 	{
-		//Session session = factory.openSession();
-		//Transaction tx = null;
 
 		//create session and transaction objects
 		Session session = HibernateUtilities.getSession();
@@ -198,6 +196,40 @@ public class Agent implements Serializable
 			agt.setAgtPosition(position);
 			agt.setAgencyId(agencyId);
 			session.update(agt); 
+			tx.commit();
+			return true;
+		}
+		catch (HibernateException e) 
+		{
+			if (tx!=null) tx.rollback();
+			e.printStackTrace(); 
+			return false;
+		}
+		finally 
+		{
+			session.close(); 
+		}
+	} //end method
+	
+	public boolean createAgent(String agtFirstName, String agtMiddleInitial, String agtLastName, String agtBusPhone, String agtEmail, String position, int agencyId)
+	{
+		//create session and transaction objects
+		Session session = HibernateUtilities.getSession();
+		Transaction tx = null;
+		// change the object values
+		try
+		{
+			tx = session.beginTransaction();
+			Agent agt = new Agent();
+			// the database handles the autoincrement for the agentID
+			agt.setAgtFirstName(agtFirstName);
+			agt.setAgtMiddleInitial(agtMiddleInitial);
+			agt.setAgtLastName(agtLastName);
+			agt.setAgtBusPhone(agtBusPhone);
+			agt.setAgtEmail(agtEmail);
+			agt.setAgtPosition(position);
+			agt.setAgencyId(agencyId);
+			session.save(agt); 
 			tx.commit();
 			return true;
 		}

@@ -463,6 +463,7 @@ public class MainForm extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
+				
 				// This button will open the layered pane containing controls for adding products to a package
 				layeredPane.setVisible(true);
 				
@@ -539,7 +540,6 @@ public class MainForm extends JFrame {
 					// set the agent form fields to enabled
 					enableAgentFormFields();
 					
-					
 				}
 				else if (selectedTab == 1) // Packages Tab
 				{
@@ -578,9 +578,38 @@ public class MainForm extends JFrame {
 					{
 						// new agent
 						System.out.println("creating a new agent");
-					}
+						Agent a = new Agent();
+						
+						
+						// get the text field values
+						String AgentFirstName = txtFirstName.getText();
+						String AgentMiddleInitial = txtMiddleInitial.getText();
+						String AgentLastName = txtLastName.getText();
+						String AgentPhone = txtBusPhone.getText();
+						String AgentEmail = txtEmail.getText();
+						String AgentPosition = txtPosition.getText();
+						int agencyID = cboAgencyID.getSelectedIndex();
+						
+						if (a.createAgent(AgentFirstName, AgentMiddleInitial, AgentLastName, AgentPhone, AgentEmail, AgentPosition, agencyID))
+						{
+							// show a success message to the user
+							JOptionPane.showMessageDialog(tabbedPane, "Created the agent successfully! ");
+							
+							// disable the form fields and refresh the pane
+							disableAgentForm();
+							
+							// reset the sidebar buttons
+							disableButtons();
+							
+						}
+						else
+						{
+							JOptionPane.showMessageDialog(tabbedPane, "Oops, there was an error saving that agent. ");
+						}
+					} //end new agent if
 					else
 					{
+						
 						// then we are editing an existing agent 
 						System.out.println("editing an existing agent");
 						
@@ -596,7 +625,9 @@ public class MainForm extends JFrame {
 						String newAgentEmail = txtEmail.getText();
 						String newAgentPosition = txtPosition.getText();
 						int newAgency = cboAgencyID.getSelectedIndex();
-						System.out.println("Getting the new values:"+ newAgentFirstName);
+						//System.out.println("Getting the new values:"+ newAgentFirstName);
+						
+						// validate entries
 						
 						// signature public void updateAgent(int agentId, String agtFirstName, String agtMiddleInitial, String agtLastName, String agtBusPhone, String agtEmail, String position, int agencyId)
 						if (a.updateAgent(a.getAgentId(), newAgentFirstName, newAgentMiddleInitial, newAgentLastName, newAgentPhone, newAgentEmail, newAgentPosition, newAgency))
@@ -608,10 +639,13 @@ public class MainForm extends JFrame {
 							//reset the form to it's default state
 							resetAgentForm();
 							
+							// reset the sidebar buttons
+							disableButtons();
+							
 						}
 						else
 						{
-							
+							JOptionPane.showMessageDialog(tabbedPane, "Oops, there was an error saving that agent. ");
 						}
 						
 					}
@@ -775,6 +809,11 @@ public class MainForm extends JFrame {
 		txtEmail.setText("");
 		cboAgencyID.setSelectedIndex(0);
 		
+		disableAgentForm();
+	}
+	protected void disableAgentForm()
+	{
+		cboSelectAgent.setEnabled(true);
 		txtFirstName.setEditable(false);
 		txtMiddleInitial.setEditable(false);
 		txtLastName.setEditable(false);
