@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 13, 2015 8:52:30 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.java.team1.travelexperts.Customer" table="CUSTOMER">
+        <id name="customerId" type="int">
+            <column name="CUSTOMERID" />
+            <generator class="assigned" />
+        </id>
+        <property name="custAddress" type="java.lang.String">
+            <column name="CUSTADDRESS" />
+        </property>
+        <property name="custBusPhone" type="java.lang.String">
+            <column name="CUSTBUSPHONE" />
+        </property>
+        <property name="custCity" type="java.lang.String">
+            <column name="CUSTCITY" />
+        </property>
+        <property name="custCountry" type="java.lang.String">
+            <column name="CUSTCOUNTRY" />
+        </property>
+        <property name="custEmail" type="java.lang.String">
+            <column name="CUSTEMAIL" />
+        </property>
+        <property name="custFirstName" type="java.lang.String">
+            <column name="CUSTFIRSTNAME" />
+        </property>
+        <property name="custHomePhone" type="java.lang.String">
+            <column name="CUSTHOMEPHONE" />
+        </property>
+        <property name="custLastName" type="java.lang.String">
+            <column name="CUSTLASTNAME" />
+        </property>
+        <property name="custPostal" type="java.lang.String">
+            <column name="CUSTPOSTAL" />
+        </property>
+        <property name="custProv" type="java.lang.String">
+            <column name="CUSTPROV" />
+        </property>
+        <many-to-one name="agent" class="com.java.team1.travelexperts.Agent" fetch="join">
+            <column name="AGENT" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>
