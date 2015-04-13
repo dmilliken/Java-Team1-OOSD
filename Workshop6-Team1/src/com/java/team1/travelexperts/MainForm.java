@@ -568,7 +568,12 @@ public class MainForm extends JFrame {
 				if (selectedTab == 0) //Agents Tab
 				{
 					// validate entries
+					
+					// detect if the agent is new or existing?
+					
 					//make sure all items are text, then update the agent object
+					
+					
 					
 					// call the Save Agent to DB method
 					

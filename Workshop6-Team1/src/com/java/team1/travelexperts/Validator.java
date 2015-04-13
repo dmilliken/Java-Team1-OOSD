@@ -23,8 +23,6 @@ public class Validator<decimal>
              private static final Date String = null;
              private Object datePattern;
  
- 
- 
              public boolean isPresent(JTextComponent c,String FieldName)
              {
                     if((c.getText().length()==0) && ((c.getText()==""))){
