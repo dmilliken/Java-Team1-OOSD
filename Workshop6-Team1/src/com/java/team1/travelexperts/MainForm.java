@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JMenu;
+import javax.swing.SwingUtilities;
 
 import java.awt.Panel;
 import java.awt.Label;
@@ -228,6 +229,9 @@ public class MainForm extends JFrame {
 				
 				// enable the sidebar Edit/Save/Delete buttons
 				enableButtons();
+				
+				// refresh the frame
+				SwingUtilities.updateComponentTreeUI(tabbedPane);
 			}
 
 		});
@@ -568,14 +572,51 @@ public class MainForm extends JFrame {
 				if (selectedTab == 0) //Agents Tab
 				{
 					// validate entries
-					
+					System.out.println("Selected index is " + cboSelectAgent.getSelectedIndex() );
 					// detect if the agent is new or existing?
+					if (cboSelectAgent.getSelectedIndex() == -1)
+					{
+						// new agent
+						System.out.println("creating a new agent");
+					}
+					else
+					{
+						// then we are editing an existing agent 
+						System.out.println("editing an existing agent");
+						
+						// get the current agent 
+						Agent a = (Agent) cboSelectAgent.getSelectedItem();
+						
+						//get the new values and store
+						
+						String newAgentFirstName = txtFirstName.getText();
+						String newAgentMiddleInitial = txtMiddleInitial.getText();
+						String newAgentLastName = txtLastName.getText();
+						String newAgentPhone = txtBusPhone.getText();
+						String newAgentEmail = txtEmail.getText();
+						String newAgentPosition = txtPosition.getText();
+						int newAgency = cboAgencyID.getSelectedIndex();
+						System.out.println("Getting the new values:"+ newAgentFirstName);
+						
+						// signature public void updateAgent(int agentId, String agtFirstName, String agtMiddleInitial, String agtLastName, String agtBusPhone, String agtEmail, String position, int agencyId)
+						if (a.updateAgent(a.getAgentId(), newAgentFirstName, newAgentMiddleInitial, newAgentLastName, newAgentPhone, newAgentEmail, newAgentPosition, newAgency))
+						{
+							//show a success message to user
+							//System.out.println("Saved the new agent! ");
+							JOptionPane.showMessageDialog(tabbedPane, "Saved the agent successfully! ");
+							
+							//reset the form to it's default state
+							resetAgentForm();
+							
+						}
+						else
+						{
+							
+						}
+						
+					}
 					
-					//make sure all items are text, then update the agent object
 					
-					
-					
-					// call the Save Agent to DB method
 					
 				}
 				else if (selectedTab == 1) // Packages Tab
@@ -719,6 +760,28 @@ public class MainForm extends JFrame {
 		allAgentsList.add(0, null);
 		
 		return allAgentsList;	
+	}
+	
+	protected void resetAgentForm()
+	{
+		// after adding, saving, or deleting, call this method to reset the form
+		
+		//cboSelectAgent.setSelectedItem(new Agent());
+		txtFirstName.setText("");
+		txtMiddleInitial.setText("");
+		txtLastName.setText("");
+		txtBusPhone.setText("");
+		txtPosition.setText("");
+		txtEmail.setText("");
+		cboAgencyID.setSelectedIndex(0);
+		
+		txtFirstName.setEditable(false);
+		txtMiddleInitial.setEditable(false);
+		txtLastName.setEditable(false);
+		txtBusPhone.setEditable(false);
+		txtPosition.setEditable(false);
+		txtEmail.setEditable(false);
+		cboAgencyID.setEnabled(false);
 	}
 
 }

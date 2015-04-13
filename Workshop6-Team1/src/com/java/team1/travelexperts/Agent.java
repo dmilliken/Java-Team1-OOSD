@@ -19,16 +19,16 @@ import java.util.List;
  */
 
 @NamedQueries({
-		// call this query when the user selects an agent from the drop down
-		@NamedQuery(
-				name = "findAgentByID",
-				query = "SELECT a from Agent a where a.agentId = :agentId"
-				),
-	// call this query in the search box 
+	// call this query when the user selects an agent from the drop down
 	@NamedQuery(
-			name = "findAgentByLastName",
-			query = "SELECT a from Agent a where a.agtLastName = :agtLastName"
-			)
+			name = "findAgentByID",
+			query = "SELECT a from Agent a where a.agentId = :agentId"
+			),
+			// call this query in the search box 
+			@NamedQuery(
+					name = "findAgentByLastName",
+					query = "SELECT a from Agent a where a.agtLastName = :agtLastName"
+					)
 })
 
 @Entity
@@ -167,47 +167,49 @@ public class Agent implements Serializable
 
 		return customer;
 	} 
-	
+
 	// Override toString Method
 	@Override
 	public String toString() {
-	    return getAgtFirstName() + " " + getAgtLastName();
+		return getAgtFirstName() + " " + getAgtLastName();
 	}
 
 	// This method will update an agent object and save to DB
 	// pass form values into this method to update a row in the Agent take
 	// Adapted from http://www.tutorialspoint.com/hibernate/hibernate_examples.htm
-	   public void updateAgent(int agentId, String agtFirstName, String agtMiddleInitial, String agtLastName, String agtBusPhone, String agtEmail, String position, int agencyId)
-	   {
-	      //Session session = factory.openSession();
-	      //Transaction tx = null;
-		   
-		  //create session and transaction objects
-		  Session session = HibernateUtilities.getSession();
-		  Transaction tx = null;
-		  // change the object values
-	      try
-	      {
-	         tx = session.beginTransaction();
-	         Agent agt = (Agent)session.get(Agent.class, agentId); 
-	         agt.setAgtFirstName(agtFirstName);
-	         agt.setAgtMiddleInitial(agtMiddleInitial);
-	         agt.setAgtLastName(agtLastName);
-	         agt.setAgtBusPhone(agtBusPhone);
-	         agt.setAgtEmail(agtEmail);
-	         agt.setAgtPosition(position);
-	         agt.setAgencyId(agencyId);
-			 session.update(agt); 
-	         tx.commit();
-	      }
-	      catch (HibernateException e) 
-	      {
-	         if (tx!=null) tx.rollback();
-	         e.printStackTrace(); 
-	      }
-	      finally 
-	      {
-	         session.close(); 
-	      }
-	   } //end method
+	public boolean updateAgent(int agentId, String agtFirstName, String agtMiddleInitial, String agtLastName, String agtBusPhone, String agtEmail, String position, int agencyId)
+	{
+		//Session session = factory.openSession();
+		//Transaction tx = null;
+
+		//create session and transaction objects
+		Session session = HibernateUtilities.getSession();
+		Transaction tx = null;
+		// change the object values
+		try
+		{
+			tx = session.beginTransaction();
+			Agent agt = (Agent)session.get(Agent.class, agentId); 
+			agt.setAgtFirstName(agtFirstName);
+			agt.setAgtMiddleInitial(agtMiddleInitial);
+			agt.setAgtLastName(agtLastName);
+			agt.setAgtBusPhone(agtBusPhone);
+			agt.setAgtEmail(agtEmail);
+			agt.setAgtPosition(position);
+			agt.setAgencyId(agencyId);
+			session.update(agt); 
+			tx.commit();
+			return true;
+		}
+		catch (HibernateException e) 
+		{
+			if (tx!=null) tx.rollback();
+			e.printStackTrace(); 
+			return false;
+		}
+		finally 
+		{
+			session.close(); 
+		}
+	} //end method
 } //end class
