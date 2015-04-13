@@ -41,6 +41,8 @@ import javax.swing.JLayeredPane;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -62,7 +64,7 @@ public class MainForm extends JFrame {
 	private JTextField txtEmail;
 	private JTextField txtPosition;
 	private JComboBox cboAgencyID;
-	private JComboBox cboPkgID;
+	private JComboBox cboSelectPackage;
 	private JTextField txtPkgname;
 	//private JTextField textField_1;
 	JDateChooser dtStartDate;
@@ -331,12 +333,56 @@ public class MainForm extends JFrame {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,}));
 		
-		JLabel lblPackageId = new JLabel("Package ID:");
+		JLabel lblPackageId = new JLabel("Select Package:");
 		lblPackageId.setFont(new Font("Tahoma", Font.BOLD, 16));
 		panelPackageInfo.add(lblPackageId, "2, 2, right, default");
 		
-		cboPkgID = new JComboBox();
-		panelPackageInfo.add(cboPkgID, "4, 2, fill, default");
+		List<?> allPackagesList = getAllPackages();
+		cboSelectPackage = new JComboBox(allPackagesList.toArray());
+		cboSelectPackage.addItemListener(new ItemListener() 
+		{
+			public void itemStateChanged(ItemEvent arg0) 
+			{
+				// event handler for the Select Package combo box 
+				
+// when the user selects an agent, run this method 
+				
+				//get the selected package object and fill textboxes with data 
+				System.out.println(cboSelectPackage.getSelectedItem());
+				Package pkg = (Package) cboSelectPackage.getSelectedItem();
+				
+				//System.out.println("Name is " + a.getAgtFirstName());
+				
+				// fill the textboxes with the data
+				txtPkgname.setText(pkg.getPkgName());
+				dtStartDate.setDate(pkg.getPkgStartDate());
+				dtEndDate.setDate(pkg.getPkgEndDate());
+				txtDescription.setText(pkg.getPkgDesc());
+				
+				//format the prices
+				
+				BigDecimal bd = pkg.getPkgBasePrice();
+				bd = bd.setScale(2, BigDecimal.ROUND_DOWN);
+				DecimalFormat df = new DecimalFormat();
+				df.setMaximumFractionDigits(2);
+				df.setMinimumFractionDigits(2);
+				df.setGroupingUsed(false);
+
+				//String result = df.format(bd);
+				String PkgBasePrice = df.format(bd);
+				String PkgCommission = df.format(pkg.getPkgAgencyCommission());
+				
+				txtPrice.setText(PkgBasePrice);
+				txtCommission.setText(PkgCommission);
+				
+				// enable the sidebar Edit/Save/Delete buttons
+				enableButtons();
+				
+				// refresh the frame
+				SwingUtilities.updateComponentTreeUI(tabbedPane);
+			}
+		});
+		panelPackageInfo.add(cboSelectPackage, "4, 2, fill, default");
 		
 		JLabel lblPackageName = new JLabel("Package Name:");
 		lblPackageName.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -656,7 +702,24 @@ public class MainForm extends JFrame {
 				else if (selectedTab == 1) // Packages Tab
 				{
 					// validate entries
-					
+					if (Validator.isPresent(txtPkgname, "Package Name") && 
+						Validator.isPresent(txtDescription, "Description") &&
+						Validator.isPresent(txtPrice, "Price") &&
+						Validator.isPresent(txtCommission, "Commission") &&
+						Validator.dateCompare(dtStartDate.getDate(), dtEndDate.getDate()) &&
+						Validator.isPositiveDouble(txtPrice, "Price") &&
+						Validator.isPositiveDouble(txtCommission, "Commission") &&
+						Validator.isValidPrice(txtPrice, txtCommission, "Price", "Commission")
+						)
+					{
+						System.out.println("Valid!");
+						// then try to save the package to the database
+						
+					}
+					else
+					{
+						System.out.println("Invalid!");
+					}
 					// call the Save Package to DB method
 					
 				} //end elseif
@@ -743,7 +806,7 @@ public class MainForm extends JFrame {
 		System.out.println("in the enablePackagesFormFields() method");
 		// method to turn the package form fields to enabled
 		// trigger when the user selects "Add" while on the Packages Tab
-		cboPkgID.setEditable(true); 
+		cboSelectPackage.setEditable(true); 
 		txtPkgname.setEditable(true);
 		dtStartDate.setEnabled(true);
 		dtEndDate.setEnabled(true);
@@ -821,6 +884,27 @@ public class MainForm extends JFrame {
 		txtPosition.setEditable(false);
 		txtEmail.setEditable(false);
 		cboAgencyID.setEnabled(false);
+	}
+	
+	// methods for the packages tab
+	
+	protected List<?> getAllPackages()
+	{
+		// refactor this section if time permits 
+		//begin session and transaction
+		session = HibernateUtilities.getSession();
+
+		Query queryFindAllPackages = session.getNamedQuery("Package.findAll");
+		List<?> allPkgList = queryFindAllPackages.list();
+
+		session.close();
+		
+		//insert a null agent
+		//Agent nullAgent = new Agent();
+		
+		allPkgList.add(0, null);
+		
+		return allPkgList;	
 	}
 
 }

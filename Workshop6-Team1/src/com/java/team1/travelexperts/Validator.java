@@ -21,8 +21,8 @@ public class Validator<decimal>
  
              public static boolean isPresent(JTextField c,String FieldName)
              {
-                    if((c.getText().length()==0) && ((c.getText()==""))){
-                           showMessage(c,FieldName+"is required.");
+                    if((c.getText().length()==0) || ((c.getText()==""))){
+                           showMessage(c,FieldName+" is required.");
                            c.requestFocusInWindow();
                            return false;
                     }
@@ -35,13 +35,24 @@ public class Validator<decimal>
                            int i =Integer.parseInt(c.getText());
                            return true;                    
                     } catch (NumberFormatException e) {
-                             showMessage(c,FieldName+"is required.");
+                             showMessage(c,FieldName+" is required.");
                              c.requestFocusInWindow();
                              //e.printStackTrace();
                              return false;
-                    }     
-                                
-                   
+                    }                                      
+             }
+             
+             public static boolean isValidPrice(JTextComponent p,JTextComponent c, String PriceFieldName, String CommFieldName)
+             {                  
+                    try {
+                           int i =Integer.parseInt(c.getText());
+                           return true;                    
+                    } catch (NumberFormatException e) {
+                             showMessage(c,CommFieldName+" should be less than " + PriceFieldName +".");
+                             c.requestFocusInWindow();
+                             //e.printStackTrace();
+                             return false;
+                    }                                      
              }
       
              public static boolean isPositiveDouble(JTextComponent c,String FieldName)
@@ -51,12 +62,13 @@ public class Validator<decimal>
                            if(i>0)                         
                            return true;
                            else
-                                 return false;
+                        	   {showMessage(c,FieldName+" must be positive.");
+                                 return false;}
                     }
                    
                    
                     catch (NumberFormatException e) {
-                             showMessage(c,FieldName+"is required.");
+                             showMessage(c,FieldName+" is required.");
                              c.requestFocusInWindow();
                              //e.printStackTrace();
                              return false;
@@ -110,7 +122,7 @@ public class Validator<decimal>
                     boolean b = email1.matches(EMAIL_REGEX);
                     if(b==false)
                     {
-                      showMessage(c,FieldName+"is required.");
+                      showMessage(c,FieldName+" is required.");
                        c.requestFocusInWindow();
                        //e.printStackTrace();
                        return false;

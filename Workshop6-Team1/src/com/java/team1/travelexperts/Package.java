@@ -1,10 +1,15 @@
 package com.java.team1.travelexperts;
 
 import java.io.Serializable;
+
 import javax.persistence.*;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 
 /**
@@ -37,14 +42,14 @@ public class Package implements Serializable {
 	//bi-directional many-to-many association to ProductsSupplier
 	@ManyToMany
 	@JoinTable(
-		name="packages_products_suppliers"
-		, joinColumns={
-			@JoinColumn(name="PackageId")
+			name="packages_products_suppliers"
+			, joinColumns={
+					@JoinColumn(name="PackageId")
 			}
-		, inverseJoinColumns={
-			@JoinColumn(name="ProductSupplierId")
+			, inverseJoinColumns={
+					@JoinColumn(name="ProductSupplierId")
 			}
-		)
+			)
 	private List<ProductsSupplier> productsSuppliers;
 
 	public Package() {
@@ -113,5 +118,84 @@ public class Package implements Serializable {
 	public void setProductsSuppliers(List<ProductsSupplier> productsSuppliers) {
 		this.productsSuppliers = productsSuppliers;
 	}
+
+	// Override toString Method
+	@Override
+	public String toString() 
+	{
+		return getPkgName();
+	}
+
+	// Garima Code 
+
+	// This method will update an package object and save to DB
+	// pass form values into this method to update a row in the Package take
+	// Adapted from http://www.tutorialspoint.com/hibernate/hibernate_examples.htm
+	public boolean updatePackage(int packageId,String pkgName,Date pkgStartDate,Date pkgEndDate,String pkgDesc,BigDecimal pkgAgencyCommission,BigDecimal pkgBasePrice)
+	{
+
+		//create session and transaction objects
+		Session session = HibernateUtilities.getSession();
+		Transaction tx = null;
+		// change the object values
+		try
+		{
+			tx = session.beginTransaction();
+			Package pkg = (Package)session.get(Package.class, packageId);
+			pkg.setPkgName(pkgName);
+			pkg.setPkgStartDate(pkgStartDate);
+			pkg.setPkgEndDate(pkgEndDate);
+			pkg.setPkgDesc(pkgDesc);
+			pkg.setPkgAgencyCommission(pkgAgencyCommission);
+			pkg.setPkgBasePrice(pkgBasePrice);
+			session.update(pkg);
+			tx.commit();
+			return true;
+		}
+		catch (HibernateException e)
+		{
+			if (tx!=null) tx.rollback();
+			e.printStackTrace();
+			return false;
+		}
+		finally
+		{
+			session.close();
+		}
+	} //end method
+
+	public boolean createPackage(String pkgName,Date pkgStartDate,Date pkgEndDate,String pkgDesc,BigDecimal pkgAgencyCommission,BigDecimal pkgBasePrice)
+	{
+		//create session and transaction objects
+		Session session = HibernateUtilities.getSession();
+		Transaction tx = null;
+		// change the object values
+		try
+		{
+			tx = session.beginTransaction();
+			Package pkg = new Package();
+			// the database handles the autoincrement for the pkgId
+			pkg.setPkgName(pkgName);
+			pkg.setPkgStartDate(pkgStartDate);
+			pkg.setPkgEndDate(pkgEndDate);
+			pkg.setPkgDesc(pkgDesc);
+			pkg.setPkgAgencyCommission(pkgAgencyCommission);
+			pkg.setPkgBasePrice(pkgBasePrice);
+			session.save(pkg);
+			tx.commit();
+			return true;
+		}
+		catch (HibernateException e)
+		{
+			if (tx!=null) tx.rollback();
+			e.printStackTrace();
+			return false;
+		}
+		finally
+		{
+			session.close();
+		}
+	} //end method
+
 
 }
