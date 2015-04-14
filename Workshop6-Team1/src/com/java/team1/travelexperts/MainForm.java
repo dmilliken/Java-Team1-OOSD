@@ -303,67 +303,67 @@ public class MainForm extends JFrame {
 
 		cboAgencyID = new JComboBox(getAllTravelAgencies().toArray());
 		panelAgentTextFields.add(cboAgencyID, "6, 16, fill, default");
-		
-				btnInactive = new JButton("Make Inactive");
-				panelAgentTextFields.add(btnInactive, "6, 20");
-				btnInactive.addMouseListener(new MouseAdapter() 
+
+		btnInactive = new JButton("Make Inactive");
+		panelAgentTextFields.add(btnInactive, "6, 20");
+		btnInactive.addMouseListener(new MouseAdapter() 
+		{
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+
+				// Event handler for the make inactive button
+
+				// if it's the agent tab, check if the selected agent has customers
+				// if no, delete the agent/inactive
+				// if yes, assign their customers to Agent # 1
+				// or pop up a menu and let them pick (so make a new form to do this part) 
+
+				// show the pane
+				layeredPaneReassignCustomers.setVisible(true);
+				// get the current agent
+				Agent a = (Agent) cboSelectAgent.getSelectedItem();
+				List<Customer> customers = a.getAgentCustomers(a);
+				if(customers.isEmpty())
+					// if empty, ask the user if they would like to delete the agent
+					System.out.println("Customer List is empty");
+
+				else 
 				{
-					@Override
-					public void mouseClicked(MouseEvent arg0) 
-					{
-						
-						// Event handler for the make inactive button
+					//Agent has customers, ask user which agent they want to reassign the customers to
+					System.out.println("Customer List is not empty");
+					// if yes, assign their customers to Agent # 1
+					// or pop up a menu and let them pick (so make a new form to do this part)
+				}
 
-						// if it's the agent tab, check if the selected agent has customers
-						// if no, delete the agent/inactive
-						// if yes, assign their customers to Agent # 1
-						// or pop up a menu and let them pick (so make a new form to do this part) 
-						
-						// show the pane
-						layeredPaneReassignCustomers.setVisible(true);
-							// get the current agent
-							Agent a = (Agent) cboSelectAgent.getSelectedItem();
-							List<Customer> customers = a.getAgentCustomers(a);
-							if(customers.isEmpty())
-								// if empty, ask the user if they would like to delete the agent
-								System.out.println("Customer List is empty");
-							
-							else 
-							{
-								//Agent has customers, ask user which agent they want to reassign the customers to
-								System.out.println("Customer List is not empty");
-								// if yes, assign their customers to Agent # 1
-								// or pop up a menu and let them pick (so make a new form to do this part)
-							}
 
-						     
-					}
-				});
-				btnInactive.setEnabled(false);
-				btnInactive.setFont(new Font("Tahoma", Font.BOLD, 14));
-		
+			}
+		});
+		btnInactive.setEnabled(false);
+		btnInactive.setFont(new Font("Tahoma", Font.BOLD, 14));
+
 		layeredPaneReassignCustomers = new JLayeredPane();
 		layeredPaneReassignCustomers.setBounds(443, 10, 324, 453);
 		tabAgents.add(layeredPaneReassignCustomers);
-		
+
 		JLabel lblReassignCustomers = new JLabel("Reassign Customers");
 		lblReassignCustomers.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblReassignCustomers.setBounds(81, 13, 194, 20);
 		layeredPaneReassignCustomers.add(lblReassignCustomers);
-		
+
 		JButton btnConfirm = new JButton("Confirm");
 		btnConfirm.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
 				// this button will add the inactive agent's customers to a new agent
-				
+
 			}
 		});
 		btnConfirm.setFont(new Font("Tahoma", Font.BOLD, 14));
 		btnConfirm.setBounds(52, 297, 101, 40);
 		layeredPaneReassignCustomers.add(btnConfirm);
-		
+
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.addMouseListener(new MouseAdapter() {
 			@Override
@@ -376,12 +376,12 @@ public class MainForm extends JFrame {
 		btnCancel.setFont(new Font("Tahoma", Font.BOLD, 14));
 		btnCancel.setBounds(186, 297, 101, 40);
 		layeredPaneReassignCustomers.add(btnCancel);
-		
+
 		JComboBox cboSelectNewAgent = new JComboBox(allAgentsList.toArray());
 		cboSelectNewAgent.setBounds(69, 78, 185, 22);
 		layeredPaneReassignCustomers.add(cboSelectNewAgent);
 		layeredPaneReassignCustomers.setVisible(false);
-		
+
 		JPanel tabPackages = new JPanel();
 		tabbedPane.addTab("Packages", null, tabPackages, null);
 		tabPackages.setLayout(null);
@@ -695,7 +695,7 @@ public class MainForm extends JFrame {
 				{
 					// validate entries
 					System.out.println("Selected index is " + cboSelectAgent.getSelectedIndex() );
-
+					
 					if (Validator.isPresent(txtFirstName, "First Name") &&
 							Validator.isPresent(txtLastName, "Last Name") &&
 							Validator.isPresent(txtBusPhone, "Phone") &&
@@ -703,84 +703,82 @@ public class MainForm extends JFrame {
 							Validator.isPresent(txtPosition, "Position"))
 					{
 						System.out.println("Agent is Valid!");
-					}					
-					// detect if the agent is new or existing
-					if (cboSelectAgent.getSelectedIndex() == -1)
-					{
-						// new agent
-						System.out.println("creating a new agent");
-						Agent a = new Agent();
-
-
-						// get the text field values
-						String AgentFirstName = txtFirstName.getText();
-						String AgentMiddleInitial = txtMiddleInitial.getText();
-						String AgentLastName = txtLastName.getText();
-						String AgentPhone = txtBusPhone.getText();
-						String AgentEmail = txtEmail.getText();
-						String AgentPosition = txtPosition.getText();
-						int agencyID = cboAgencyID.getSelectedIndex();
-
-						if (a.createAgent(AgentFirstName, AgentMiddleInitial, AgentLastName, AgentPhone, AgentEmail, AgentPosition, agencyID))
+						//}					
+						// detect if the agent is new or existing
+						if (cboSelectAgent.getSelectedIndex() == -1)
 						{
-							// show a success message to the user
-							JOptionPane.showMessageDialog(tabbedPane, "Created the agent successfully! ");
+							// new agent
+							System.out.println("creating a new agent");
+							Agent a = new Agent();
 
-							// disable the form fields and refresh the pane
-							disableAgentForm();
 
-							// reset the sidebar buttons
-							disableButtons();
+							// get the text field values
+							String AgentFirstName = txtFirstName.getText();
+							String AgentMiddleInitial = txtMiddleInitial.getText();
+							String AgentLastName = txtLastName.getText();
+							String AgentPhone = txtBusPhone.getText();
+							String AgentEmail = txtEmail.getText();
+							String AgentPosition = txtPosition.getText();
+							int agencyID = cboAgencyID.getSelectedIndex();
+
+							if (a.createAgent(AgentFirstName, AgentMiddleInitial, AgentLastName, AgentPhone, AgentEmail, AgentPosition, agencyID))
+							{
+								// show a success message to the user
+								JOptionPane.showMessageDialog(tabbedPane, "Created the agent successfully! ");
+
+								// disable the form fields and refresh the pane
+								disableAgentForm();
+
+								// reset the sidebar buttons
+								disableButtons();
+
+							}
+							else
+							{
+								JOptionPane.showMessageDialog(tabbedPane, "Oops, there was an error saving that agent. ");
+							}
+						} //end new agent if
+						else //edit existing agent
+						{
+
+							// then we are editing an existing agent 
+							System.out.println("editing an existing agent");
+
+							// get the current agent 
+							Agent a = (Agent) cboSelectAgent.getSelectedItem();
+
+							//get the new values and store
+
+							String newAgentFirstName = txtFirstName.getText();
+							String newAgentMiddleInitial = txtMiddleInitial.getText();
+							String newAgentLastName = txtLastName.getText();
+							String newAgentPhone = txtBusPhone.getText();
+							String newAgentEmail = txtEmail.getText();
+							String newAgentPosition = txtPosition.getText();
+							int newAgency = cboAgencyID.getSelectedIndex();
+							//System.out.println("Getting the new values:"+ newAgentFirstName);
+
+							// signature public void updateAgent(int agentId, String agtFirstName, String agtMiddleInitial, String agtLastName, String agtBusPhone, String agtEmail, String position, int agencyId)
+							if (a.updateAgent(a.getAgentId(), newAgentFirstName, newAgentMiddleInitial, newAgentLastName, newAgentPhone, newAgentEmail, newAgentPosition, newAgency))
+							{
+								//show a success message to user
+								//System.out.println("Saved the new agent! ");
+								JOptionPane.showMessageDialog(tabbedPane, "Saved the agent successfully! ");
+
+								//reset the form to it's default state
+								resetAgentForm();
+
+								// reset the sidebar buttons
+								disableButtons();
+
+							}
+							else
+							{
+								JOptionPane.showMessageDialog(tabbedPane, "Oops, there was an error saving that agent. ");
+							}
 
 						}
-						else
-						{
-							JOptionPane.showMessageDialog(tabbedPane, "Oops, there was an error saving that agent. ");
-						}
-					} //end new agent if
-					else //edit existing agent
-					{
-
-						// then we are editing an existing agent 
-						System.out.println("editing an existing agent");
-
-						// get the current agent 
-						Agent a = (Agent) cboSelectAgent.getSelectedItem();
-
-						//get the new values and store
-
-						String newAgentFirstName = txtFirstName.getText();
-						String newAgentMiddleInitial = txtMiddleInitial.getText();
-						String newAgentLastName = txtLastName.getText();
-						String newAgentPhone = txtBusPhone.getText();
-						String newAgentEmail = txtEmail.getText();
-						String newAgentPosition = txtPosition.getText();
-						int newAgency = cboAgencyID.getSelectedIndex();
-						//System.out.println("Getting the new values:"+ newAgentFirstName);
-
-						// validate entries
-
-						// signature public void updateAgent(int agentId, String agtFirstName, String agtMiddleInitial, String agtLastName, String agtBusPhone, String agtEmail, String position, int agencyId)
-						if (a.updateAgent(a.getAgentId(), newAgentFirstName, newAgentMiddleInitial, newAgentLastName, newAgentPhone, newAgentEmail, newAgentPosition, newAgency))
-						{
-							//show a success message to user
-							//System.out.println("Saved the new agent! ");
-							JOptionPane.showMessageDialog(tabbedPane, "Saved the agent successfully! ");
-
-							//reset the form to it's default state
-							resetAgentForm();
-
-							// reset the sidebar buttons
-							disableButtons();
-
-						}
-						else
-						{
-							JOptionPane.showMessageDialog(tabbedPane, "Oops, there was an error saving that agent. ");
-						}
-
 					}
-
 
 
 				}
@@ -863,7 +861,7 @@ public class MainForm extends JFrame {
 		btnExit.setFont(new Font("Tahoma", Font.BOLD, 14));
 		btnExit.setBounds(23, 459, 101, 40);
 		panelButtons.add(btnExit);
-		
+
 		JButton btnDelete = new JButton("Delete");
 		btnDelete.setFont(new Font("Tahoma", Font.BOLD, 14));
 		btnDelete.setEnabled(false);
