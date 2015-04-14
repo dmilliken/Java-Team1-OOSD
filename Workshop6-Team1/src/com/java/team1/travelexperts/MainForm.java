@@ -352,11 +352,27 @@ public class MainForm extends JFrame {
 		layeredPaneReassignCustomers.add(lblReassignCustomers);
 		
 		JButton btnConfirm = new JButton("Confirm");
+		btnConfirm.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				// this button will add the inactive agent's customers to a new agent
+				
+			}
+		});
 		btnConfirm.setFont(new Font("Tahoma", Font.BOLD, 14));
 		btnConfirm.setBounds(52, 297, 101, 40);
 		layeredPaneReassignCustomers.add(btnConfirm);
 		
 		JButton btnCancel = new JButton("Cancel");
+		btnCancel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{
+				// make this panel invisible
+				layeredPaneReassignCustomers.setVisible(false);
+			}
+		});
 		btnCancel.setFont(new Font("Tahoma", Font.BOLD, 14));
 		btnCancel.setBounds(186, 297, 101, 40);
 		layeredPaneReassignCustomers.add(btnCancel);

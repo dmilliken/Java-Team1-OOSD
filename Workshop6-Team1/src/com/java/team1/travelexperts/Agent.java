@@ -264,8 +264,6 @@ public class Agent implements Serializable
 			}
 			session.close();
 		} //end if
-		return customers;
-		        
-        
+		return customers;     
 	}//end method
 } //end class
