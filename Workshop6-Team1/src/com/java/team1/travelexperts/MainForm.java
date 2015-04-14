@@ -48,6 +48,7 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -70,9 +71,8 @@ public class MainForm extends JFrame {
 	private JComboBox cboAgencyID;
 	private JComboBox cboSelectPackage;
 	private JTextField txtPkgname;
-	//private JTextField textField_1;
-	JDateChooser dtStartDate;
-	JDateChooser dtEndDate;
+	private JDateChooser dtStartDate;
+	private JDateChooser dtEndDate;
 	private JTextField txtDescription;
 	private JTextField txtPrice;
 	private JTextField txtCommission;
@@ -84,6 +84,7 @@ public class MainForm extends JFrame {
 	private int selectedTab;
 	JLayeredPane layeredPaneReassignCustomers;
 	JComboBox cboSelectNewAgent;
+	private JButton btnCancelAgent;
 	Session session;
 
 	/**
@@ -235,8 +236,12 @@ public class MainForm extends JFrame {
 				System.out.println("Agency Selected Item is " + cboAgencyID.getSelectedItem());
 				//System.out.println("Agency Selected Object is " + cboAgencyID.getSelectedObjects().toString());
 
-				// enable the sidebar Edit/Save/Delete buttons
+				// enable the required buttons
 				enableButtons();
+				btnCancelAgent.setEnabled(true);
+				btnInactive.setEnabled(true);
+				//cboAgencyID.setEnabled(true);
+				
 
 				// refresh the frame
 				SwingUtilities.updateComponentTreeUI(tabbedPane);
@@ -305,6 +310,23 @@ public class MainForm extends JFrame {
 
 		cboAgencyID = new JComboBox(getAllTravelAgencies().toArray());
 		panelAgentTextFields.add(cboAgencyID, "6, 16, fill, default");
+		
+		btnCancelAgent = new JButton("Cancel");
+		btnCancelAgent.addMouseListener(new MouseAdapter() 
+		{
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				// cancel button on the agent tab
+				// resets the form back to it's original state
+				//resetAgentForm();
+				//disableAgentForm();
+				//disableButtons();
+			}
+		});
+		btnCancelAgent.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnCancelAgent.setEnabled(false);
+		panelAgentTextFields.add(btnCancelAgent, "6, 18");
 
 		btnInactive = new JButton("Make Inactive");
 		panelAgentTextFields.add(btnInactive, "6, 20");
@@ -359,34 +381,60 @@ public class MainForm extends JFrame {
 			public void mouseClicked(MouseEvent arg0) 
 			{
 				// this button will add the inactive agent's customers to a new agent
-				
-				// get Session and transaction
-				session = HibernateUtilities.getSession();
-				Transaction tx = session.beginTransaction();
+
 				//get customer list from old agent
 				Agent agtold = (Agent) cboSelectAgent.getSelectedItem();
 				List<Customer> customers = agtold.getAgentCustomers(agtold);                   
 				//select new agent
 				Agent agtnew = (Agent) cboSelectNewAgent.getSelectedItem();
-				//set NEW agent id in old agent's customer list
 
-				for (int i = 0; i < customers.size(); i++)
+				// check to make sure the old agent is different from the new agent
+				if (agtold.equals(agtnew))
 				{
-					System.out.println("Updating customer list to new agent");
-					System.out.println("Before update");
-					Customer oneCustomer = (Customer) customers.get(i);  
-					System.out.println(oneCustomer.getCustomerId()+ " " +oneCustomer.getAgent().getAgentId());
-					oneCustomer.setAgent(agtnew);
-					System.out.println("After update");
-					System.out.println(oneCustomer.getCustomerId()+ " " +oneCustomer.getAgent().getAgentId());
-					session.update(oneCustomer); 
+					System.out.println("The agents are the same");
+					JOptionPane.showMessageDialog(tabbedPane, "The Agents you selected are the same! Please choose a different agent","Error", JOptionPane.ERROR_MESSAGE);
 				}
-				tx.commit();
-				session.close();
-				
-				
-				// make panel invisible
-				layeredPaneReassignCustomers.setVisible(false);
+				else
+				{
+					// agents are different
+					Session session = null;
+					Transaction tx = null;
+					try
+					{
+						//set NEW agent id in old agent's customer list
+						// get Session and transaction
+						session = HibernateUtilities.getSession();
+						tx = session.beginTransaction();
+						for (int i = 0; i < customers.size(); i++)
+						{
+							System.out.println("Updating customer list to new agent");
+							System.out.println("Before update");
+							Customer oneCustomer = (Customer) customers.get(i);  
+							System.out.println(oneCustomer.getCustomerId()+ " " +oneCustomer.getAgent().getAgentId());
+							oneCustomer.setAgent(agtnew);
+							System.out.println("After update");
+							System.out.println(oneCustomer.getCustomerId()+ " " +oneCustomer.getAgent().getAgentId());
+							session.update(oneCustomer); 
+						}
+						tx.commit();
+						JOptionPane.showMessageDialog(tabbedPane, "Successfully updated the customers. ");
+
+						// make panel invisible
+						layeredPaneReassignCustomers.setVisible(false);
+
+					}
+					catch (HibernateException e) 
+					{
+						JOptionPane.showMessageDialog(tabbedPane, "Oops! There was a problem updating the agent's customers. ","Error", JOptionPane.ERROR_MESSAGE);
+						if (tx!=null) tx.rollback();
+						e.printStackTrace(); 
+					}
+					finally
+					{
+						session.close();
+					}
+				}
+
 			}
 		});
 		btnConfirm.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -658,10 +706,18 @@ public class MainForm extends JFrame {
 
 				if (selectedTab == 0) //Agents Tab
 				{
+					System.out.println(cboSelectAgent.getSelectedIndex());
 					// set the agent form fields to enabled
 					enableAgentFormFields();
+					resetAgentForm();
+					btnCancelAgent.setEnabled(true);
 					// set the selected Agent to null
-					cboSelectAgent.setSelectedIndex(-1);
+					cboSelectAgent.setSelectedIndex(0);
+					cboSelectAgent.setEnabled(false);
+					cboSelectAgent.setEditable(false);
+					cboAgencyID.setEnabled(true);
+					btnInactive.setEnabled(false);
+					//btnInactive.setVisible(false);
 
 				}
 				else if (selectedTab == 1) // Packages Tab
@@ -696,6 +752,7 @@ public class MainForm extends JFrame {
 				{
 					// set the agent form fields to enabled
 					enableAgentFormFields();
+					btnCancelAgent.setEnabled(true);
 
 				}
 				else if (selectedTab == 1) // Packages Tab
@@ -1017,7 +1074,8 @@ public class MainForm extends JFrame {
 	{
 		// after adding, saving, or deleting, call this method to reset the form
 
-		//cboSelectAgent.setSelectedItem(new Agent());
+		//cboSelectAgent.setSelectedItem(-1);
+		cboSelectAgent.setSelectedIndex(-1);
 		txtFirstName.setText("");
 		txtMiddleInitial.setText("");
 		txtLastName.setText("");
@@ -1026,7 +1084,6 @@ public class MainForm extends JFrame {
 		txtEmail.setText("");
 		cboAgencyID.setSelectedIndex(0);
 
-		disableAgentForm();
 	}
 	protected void disableAgentForm()
 	{
