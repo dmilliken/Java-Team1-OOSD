@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -56,7 +57,7 @@ public class Agent implements Serializable
 	private String agtPosition;
 
 	//bi-directional many-to-one association to Customer
-	@OneToMany(mappedBy="agent")
+	@OneToMany(mappedBy="agent", fetch = FetchType.EAGER)
 	private List<Customer> customers;
 
 	public Agent() 
@@ -244,4 +245,27 @@ public class Agent implements Serializable
 			session.close(); 
 		}
 	} //end method
+	public List<Customer> getAgentCustomers(Agent a)
+	{
+		Session session = HibernateUtilities.getSession();
+		Query query = session.getNamedQuery("findAgentByID")
+				.setInteger("agentId", a.getAgentId());
+		List<?> list = query.list();
+		if (!list.isEmpty()) 
+		{
+			//use the customer method generated in the entity class
+			List<Customer> customers = a.getCustomers();
+			//How many customers does this agent have?
+			System.out.println("This Agent has " + customers.size() + " customers.");
+			// Display all of them
+			for (int i = 0; i < customers.size(); i++) {
+				Customer oneCustomer = (Customer) customers.get(i);
+				System.out.println(oneCustomer.getCustomerId() + " " + oneCustomer.getCustFirstName());
+			}
+			session.close();
+		} //end if
+		return customers;
+		        
+        
+	}//end method
 } //end class

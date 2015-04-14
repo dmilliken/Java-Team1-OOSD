@@ -91,8 +91,6 @@ public class TestSelectWithHibernate
 		}
 		
 		
-		
-		
 		// fetch an agent and update their record
 		session.getTransaction().commit();
 		session.close();
