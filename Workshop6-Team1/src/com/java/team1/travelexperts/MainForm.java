@@ -84,8 +84,9 @@ public class MainForm extends JFrame {
 	private int selectedTab;
 	JLayeredPane layeredPaneReassignCustomers;
 	JComboBox cboSelectNewAgent;
-	private JButton btnCancelAgent;
 	Session session;
+	private JComboBox cboProducts;
+	private JComboBox cboSupplier;
 
 	/**
 	 * Launch the application.
@@ -209,12 +210,16 @@ public class MainForm extends JFrame {
 		cboSelectAgent.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) 
 			{
+				
 				// when the user selects an agent, run this method 
 
 				//get the selected agent object and fill textboxes with data 
 				System.out.println(cboSelectAgent.getSelectedItem());
 				Agent a = (Agent) cboSelectAgent.getSelectedItem();
-
+				if (cboSelectAgent.getSelectedIndex() == -1 || cboSelectAgent.getSelectedIndex() == 0)
+				{
+					return;
+				}
 				//System.out.println("Name is " + a.getAgtFirstName());
 
 				// fill the textboxes with the data
@@ -238,7 +243,7 @@ public class MainForm extends JFrame {
 
 				// enable the required buttons
 				enableButtons();
-				btnCancelAgent.setEnabled(true);
+				
 				btnInactive.setEnabled(true);
 				//cboAgencyID.setEnabled(true);
 				
@@ -310,23 +315,6 @@ public class MainForm extends JFrame {
 
 		cboAgencyID = new JComboBox(getAllTravelAgencies().toArray());
 		panelAgentTextFields.add(cboAgencyID, "6, 16, fill, default");
-		
-		btnCancelAgent = new JButton("Cancel");
-		btnCancelAgent.addMouseListener(new MouseAdapter() 
-		{
-			@Override
-			public void mouseClicked(MouseEvent arg0) 
-			{
-				// cancel button on the agent tab
-				// resets the form back to it's original state
-				//resetAgentForm();
-				//disableAgentForm();
-				//disableButtons();
-			}
-		});
-		btnCancelAgent.setFont(new Font("Tahoma", Font.BOLD, 14));
-		btnCancelAgent.setEnabled(false);
-		panelAgentTextFields.add(btnCancelAgent, "6, 18");
 
 		btnInactive = new JButton("Make Inactive");
 		panelAgentTextFields.add(btnInactive, "6, 20");
@@ -448,6 +436,7 @@ public class MainForm extends JFrame {
 			{
 				// make this panel invisible
 				layeredPaneReassignCustomers.setVisible(false);
+				
 			}
 		});
 		btnCancel.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -503,9 +492,11 @@ public class MainForm extends JFrame {
 			public void itemStateChanged(ItemEvent arg0) 
 			{
 				// event handler for the Select Package combo box 
-
-				// when the user selects an agent, run this method 
-
+				
+				if (cboSelectPackage.getSelectedIndex() == -1 || cboSelectPackage.getSelectedIndex() == 0)
+				{
+					return;
+				}
 				//get the selected package object and fill textboxes with data 
 				System.out.println(cboSelectPackage.getSelectedItem());
 				Package pkg = (Package) cboSelectPackage.getSelectedItem();
@@ -534,8 +525,9 @@ public class MainForm extends JFrame {
 				txtPrice.setText(PkgBasePrice);
 				txtCommission.setText(PkgCommission);
 
-				// enable the sidebar Edit/Save/Delete buttons
+				// enable the required buttons
 				enableButtons();
+				btnAddProducts.setEnabled(true);
 
 				// refresh the frame
 				SwingUtilities.updateComponentTreeUI(tabbedPane);
@@ -652,23 +644,28 @@ public class MainForm extends JFrame {
 		lblProductName.setFont(new Font("Tahoma", Font.BOLD, 15));
 		panel.add(lblProductName, "2, 4, right, default");
 
-		JComboBox cboProducts = new JComboBox();
+		cboProducts = new JComboBox();
 		panel.add(cboProducts, "4, 4, fill, default");
 
 		JLabel lblSupplier = new JLabel("Supplier:");
 		lblSupplier.setFont(new Font("Tahoma", Font.BOLD, 15));
 		panel.add(lblSupplier, "2, 8, right, default");
 
-		JComboBox cboSupplier = new JComboBox();
+		cboSupplier = new JComboBox();
 		panel.add(cboSupplier, "4, 8, fill, default");
 
 		btnAddProducts = new JButton("Add Products");
+		btnAddProducts.setEnabled(false);
 		btnAddProducts.addMouseListener(new MouseAdapter() 
 		{
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-
+				// don't allow the user to click on it if it's disabled
+				if (!btnAddProducts.isEnabled()) 
+				{
+		            return;
+		        }
 				// This button will open the layered pane containing controls for adding products to a package
 				layeredPane.setVisible(true);
 
@@ -676,7 +673,7 @@ public class MainForm extends JFrame {
 				btnAddProducts.setEnabled(false);
 			}
 		});
-		btnAddProducts.setBounds(160, 411, 132, 25);
+		btnAddProducts.setBounds(153, 335, 132, 25);
 		tabPackages.add(btnAddProducts);
 
 		JPanel panelButtons = new JPanel();
@@ -710,11 +707,12 @@ public class MainForm extends JFrame {
 					// set the agent form fields to enabled
 					enableAgentFormFields();
 					resetAgentForm();
-					btnCancelAgent.setEnabled(true);
+					
+					btnEdit.setEnabled(false);
 					// set the selected Agent to null
 					cboSelectAgent.setSelectedIndex(0);
-					cboSelectAgent.setEnabled(false);
-					cboSelectAgent.setEditable(false);
+					//cboSelectAgent.setEnabled(false);
+					//cboSelectAgent.setEditable(false);
 					cboAgencyID.setEnabled(true);
 					btnInactive.setEnabled(false);
 					//btnInactive.setVisible(false);
@@ -723,6 +721,7 @@ public class MainForm extends JFrame {
 				else if (selectedTab == 1) // Packages Tab
 				{
 					// set the packages form fields to enabled
+					resetPackageForm();
 					enablePackagesFormFields();
 
 				} //end elseif
@@ -752,14 +751,12 @@ public class MainForm extends JFrame {
 				{
 					// set the agent form fields to enabled
 					enableAgentFormFields();
-					btnCancelAgent.setEnabled(true);
 
 				}
 				else if (selectedTab == 1) // Packages Tab
 				{
 					// set the packages form fields to enabled
 					enablePackagesFormFields();
-
 				} //end elseif
 
 			}
@@ -932,7 +929,7 @@ public class MainForm extends JFrame {
 		});
 		btnSave.setEnabled(false);
 		btnSave.setFont(new Font("Tahoma", Font.BOLD, 14));
-		btnSave.setBounds(23, 218, 101, 40);
+		btnSave.setBounds(23, 165, 101, 40);
 		panelButtons.add(btnSave);
 
 		JButton btnExit = new JButton("Exit");
@@ -948,11 +945,32 @@ public class MainForm extends JFrame {
 		btnExit.setBounds(23, 459, 101, 40);
 		panelButtons.add(btnExit);
 
-		JButton btnDelete = new JButton("Delete");
-		btnDelete.setFont(new Font("Tahoma", Font.BOLD, 14));
-		btnDelete.setEnabled(false);
-		btnDelete.setBounds(23, 165, 101, 40);
-		panelButtons.add(btnDelete);
+		JButton btnResetForm = new JButton("Cancel");
+		btnResetForm.addMouseListener(new MouseAdapter() 
+		{
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				// reset the form
+				selectedTab = tabbedPane.getSelectedIndex();
+				
+				if (selectedTab == 0) //Agents Tab
+				{
+					resetAgentForm();
+					disableAgentForm();			
+				}
+				else if (selectedTab == 1) //Packages Tab
+				{
+					resetPackageForm();
+					disablePackageForm();			
+				}
+				disableButtons();
+				
+			}
+		});
+		btnResetForm.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnResetForm.setBounds(23, 218, 101, 40);
+		panelButtons.add(btnResetForm);
 
 		JPanel panelViews = new JPanel();
 		panelViews.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -1132,7 +1150,7 @@ public class MainForm extends JFrame {
 	{
 		// after adding, saving, or deleting, call this method to reset the form
 
-		//cboSelectAgent.setSelectedItem(new Agent());
+		cboSelectPackage.setSelectedIndex(0);
 		txtPkgname.setText("");
 		dtStartDate.setDate(null);
 		dtEndDate.setDate(null);
