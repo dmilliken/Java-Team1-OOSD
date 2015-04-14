@@ -51,6 +51,7 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
@@ -82,6 +83,7 @@ public class MainForm extends JFrame {
 	private JButton btnSave;
 	private int selectedTab;
 	JLayeredPane layeredPaneReassignCustomers;
+	JComboBox cboSelectNewAgent;
 	Session session;
 
 	/**
@@ -357,7 +359,34 @@ public class MainForm extends JFrame {
 			public void mouseClicked(MouseEvent arg0) 
 			{
 				// this button will add the inactive agent's customers to a new agent
+				
+				// get Session and transaction
+				session = HibernateUtilities.getSession();
+				Transaction tx = session.beginTransaction();
+				//get customer list from old agent
+				Agent agtold = (Agent) cboSelectAgent.getSelectedItem();
+				List<Customer> customers = agtold.getAgentCustomers(agtold);                   
+				//select new agent
+				Agent agtnew = (Agent) cboSelectNewAgent.getSelectedItem();
+				//set NEW agent id in old agent's customer list
 
+				for (int i = 0; i < customers.size(); i++)
+				{
+					System.out.println("Updating customer list to new agent");
+					System.out.println("Before update");
+					Customer oneCustomer = (Customer) customers.get(i);  
+					System.out.println(oneCustomer.getCustomerId()+ " " +oneCustomer.getAgent().getAgentId());
+					oneCustomer.setAgent(agtnew);
+					System.out.println("After update");
+					System.out.println(oneCustomer.getCustomerId()+ " " +oneCustomer.getAgent().getAgentId());
+					session.update(oneCustomer); 
+				}
+				tx.commit();
+				session.close();
+				
+				
+				// make panel invisible
+				layeredPaneReassignCustomers.setVisible(false);
 			}
 		});
 		btnConfirm.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -377,7 +406,7 @@ public class MainForm extends JFrame {
 		btnCancel.setBounds(186, 297, 101, 40);
 		layeredPaneReassignCustomers.add(btnCancel);
 
-		JComboBox cboSelectNewAgent = new JComboBox(allAgentsList.toArray());
+		cboSelectNewAgent = new JComboBox(allAgentsList.toArray());
 		cboSelectNewAgent.setBounds(69, 78, 185, 22);
 		layeredPaneReassignCustomers.add(cboSelectNewAgent);
 		layeredPaneReassignCustomers.setVisible(false);
@@ -695,7 +724,7 @@ public class MainForm extends JFrame {
 				{
 					// validate entries
 					System.out.println("Selected index is " + cboSelectAgent.getSelectedIndex() );
-					
+
 					if (Validator.isPresent(txtFirstName, "First Name") &&
 							Validator.isPresent(txtLastName, "Last Name") &&
 							Validator.isPresent(txtBusPhone, "Phone") &&
