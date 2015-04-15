@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 14, 2015 8:25:05 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.java.team1.travelexperts.Package" table="PACKAGE">
+        <id name="packageId" type="int">
+            <column name="PACKAGEID" />
+            <generator class="assigned" />
+        </id>
+        <property name="pkgAgencyCommission" type="java.math.BigDecimal">
+            <column name="PKGAGENCYCOMMISSION" />
+        </property>
+        <property name="pkgBasePrice" type="java.math.BigDecimal">
+            <column name="PKGBASEPRICE" />
+        </property>
+        <property name="pkgDesc" type="java.lang.String">
+            <column name="PKGDESC" />
+        </property>
+        <property name="pkgEndDate" type="java.util.Date">
+            <column name="PKGENDDATE" />
+        </property>
+        <property name="pkgName" type="java.lang.String">
+            <column name="PKGNAME" />
+        </property>
+        <property name="pkgStartDate" type="java.util.Date">
+            <column name="PKGSTARTDATE" />
+        </property>
+        <list name="productsSuppliers" inverse="false" table="PRODUCTSSUPPLIER" lazy="true">
+            <key>
+                <column name="PACKAGEID" />
+            </key>
+            <list-index></list-index>
+            <one-to-many class="com.java.team1.travelexperts.ProductsSupplier" />
+        </list>
+    </class>
+</hibernate-mapping>

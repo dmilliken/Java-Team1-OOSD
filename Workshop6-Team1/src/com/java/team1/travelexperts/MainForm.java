@@ -920,7 +920,6 @@ public class MainForm extends JFrame {
 					{
 						System.out.println("Invalid!");
 					}
-					// call the Save Package to DB method
 
 				} //end elseif
 			} //end mouse click 

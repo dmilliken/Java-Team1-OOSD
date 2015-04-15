@@ -12,30 +12,30 @@ public class HibernateUtilities {
 
 	//create session factory and make it accessible
 	
-	private static SessionFactory sessionFactory;
-	private static ServiceRegistry serviceRegistry;  //hibernate 4
-
-	    static
-	    {
-	        try
-	        {
-//	          Configuration configuration = new Configuration();
-	            Configuration configuration = new Configuration().configure();
-
-	            serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();
-	            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-	        }
-	        catch (HibernateException he)
-	        {
-	            System.err.println("Error creating Session: " + he);
-	            throw new ExceptionInInitializerError(he);
-	        }
-	    }
-
-	    public static SessionFactory getSessionFactory()
-	    {
-	        return sessionFactory;
-	    } 
+//	private static SessionFactory sessionFactory;
+//	private static ServiceRegistry serviceRegistry;  //hibernate 4
+//
+//	    static
+//	    {
+//	        try
+//	        {
+////	          Configuration configuration = new Configuration();
+//	            Configuration configuration = new Configuration().configure();
+//
+//	            serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();
+//	            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+//	        }
+//	        catch (HibernateException he)
+//	        {
+//	            System.err.println("Error creating Session: " + he);
+//	            throw new ExceptionInInitializerError(he);
+//	        }
+//	    }
+//
+//	    public static SessionFactory getSessionFactory()
+//	    {
+//	        return sessionFactory;
+//	    } 
 
 	    public static Session getSession()
 	    {

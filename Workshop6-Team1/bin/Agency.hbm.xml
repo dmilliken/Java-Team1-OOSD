@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 11, 2015 5:06:21 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.java.team1.travelexperts.Agency" table="AGENCY">
+        <id name="agencyId" type="int">
+            <column name="AGENCYID" />
+            <generator class="assigned" />
+        </id>
+        <property name="agncyAddress" type="java.lang.String">
+            <column name="AGNCYADDRESS" />
+        </property>
+        <property name="agncyCity" type="java.lang.String">
+            <column name="AGNCYCITY" />
+        </property>
+        <property name="agncyCountry" type="java.lang.String">
+            <column name="AGNCYCOUNTRY" />
+        </property>
+        <property name="agncyFax" type="java.lang.String">
+            <column name="AGNCYFAX" />
+        </property>
+        <property name="agncyPhone" type="java.lang.String">
+            <column name="AGNCYPHONE" />
+        </property>
+        <property name="agncyPostal" type="java.lang.String">
+            <column name="AGNCYPOSTAL" />
+        </property>
+        <property name="agncyProv" type="java.lang.String">
+            <column name="AGNCYPROV" />
+        </property>
+    </class>
+</hibernate-mapping>
