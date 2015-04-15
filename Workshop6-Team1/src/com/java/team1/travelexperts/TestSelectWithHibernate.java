@@ -158,11 +158,11 @@ public class TestSelectWithHibernate
 			
 			Supplier s0 = p0_sups.get(j);
 			System.out.println(s0.getSupName());
+			//System.out.println(p0_sups.get(j));
 			
 		}
 		// fetch an agent and update their record
 		session.getTransaction().commit();
 		session.close();
-
 	}
 }

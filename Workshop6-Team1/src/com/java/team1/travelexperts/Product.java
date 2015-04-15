@@ -1,7 +1,9 @@
 package com.java.team1.travelexperts;
 
 import java.io.Serializable;
+
 import javax.persistence.*;
+
 import java.util.List;
 
 
@@ -21,7 +23,7 @@ public class Product implements Serializable {
 	private String prodName;
 
 	//bi-directional many-to-many association to Supplier
-	@ManyToMany
+	@ManyToMany (fetch = FetchType.EAGER)
 	@JoinTable(
 		name="products_suppliers"
 		, joinColumns={
@@ -58,6 +60,13 @@ public class Product implements Serializable {
 
 	public void setSuppliers(List<Supplier> suppliers) {
 		this.suppliers = suppliers;
+	}
+	
+	// Override toString Method
+	@Override
+	public String toString() 
+	{
+		return getProdName();
 	}
 
 }

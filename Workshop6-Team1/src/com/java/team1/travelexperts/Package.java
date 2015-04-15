@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -42,7 +43,7 @@ public class Package implements Serializable {
 	private Date pkgStartDate;
 
 	//bi-directional many-to-many association to ProductsSupplier
-	@ManyToMany
+	@ManyToMany (fetch = FetchType.EAGER) //remove this fetch stuff if the class break
 	@JoinTable(
 			name="packages_products_suppliers"
 			, joinColumns={
@@ -127,7 +128,71 @@ public class Package implements Serializable {
 	{
 		return getPkgName();
 	}
-
+	
+	public List<?> getPackageProducts(Package p)
+	{
+		System.out.println("Getting package products");
+		Session session = null;
+		List<?> prodlist = null;
+		try
+		{
+			session = HibernateUtilities.getSession();
+			List<?> prod_sups = p.getProductsSuppliers();
+			for (int i=0; i<prod_sups.size(); i++)
+			{
+				ProductsSupplier ps = (ProductsSupplier) prod_sups.get(i);
+				//for each row, store the product name
+				Query prod_query = session.createQuery("from Product where ProductId = :id ");
+				prod_query.setParameter("id", ps.getProductId());
+				prodlist = prod_query.list();  //this is a list of all of these package's products
+				for (int j=0; j<prodlist.size(); j++)
+				{
+					Product pr = (Product) prodlist.get(j);
+					System.out.println(pr.getProdName());
+				}
+			}
+		}//end try
+		catch (HibernateException e)
+		{
+			e.printStackTrace();
+			
+		}
+		finally
+		{session.close();}
+		return prodlist;
+	}
+	
+	public List<?> getPackageProductSuppliers(List<?> packageproducts)
+	{
+		// pass in a list of products in the desired package, return a list of suppliers for those products
+		System.out.println("Getting package product suppliers");
+		Session session = null;
+		List<?> suplist = null;
+		try
+		{
+			session = HibernateUtilities.getSession();
+			for (int i=0; i<packageproducts.size(); i++)
+			{
+				Product p = (Product) packageproducts.get(i);
+				suplist = p.getSuppliers();
+			}
+			// print out the result to check
+			for (int i=0; i<suplist.size(); i++)
+			{
+				Supplier s = (Supplier) suplist.get(i);
+				System.out.println(s.getSupName());
+			}
+		}//end try
+		catch (HibernateException e)
+		{
+			e.printStackTrace();
+			
+		}
+		finally
+		{session.close();}
+		return suplist;
+	}
+	
 	// Garima Code 
 
 	// This method will update an package object and save to DB

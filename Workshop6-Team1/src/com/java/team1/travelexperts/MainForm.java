@@ -13,6 +13,9 @@ import java.awt.Font;
 
 import javax.swing.JButton;
 import javax.swing.border.EtchedBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JMenuBar;
@@ -45,8 +48,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -55,6 +60,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+
+import javax.swing.JList;
+import javax.swing.JTable;
+import javax.swing.JScrollPane;
 
 @SuppressWarnings("serial")
 public class MainForm extends JFrame {
@@ -87,6 +96,12 @@ public class MainForm extends JFrame {
 	Session session;
 	private JComboBox cboProducts;
 	private JComboBox cboSupplier;
+	private List<?> all_products;
+	private List<?> package_products = null;
+	private List<?> product_suppliers = Collections.emptyList();
+	private List<?> package_product_suppliers = Collections.emptyList();
+	private JTable table;
+	//private List<?> product_suppliers= null;
 
 	/**
 	 * Launch the application.
@@ -113,7 +128,7 @@ public class MainForm extends JFrame {
 	@SuppressWarnings("unchecked")
 	public MainForm() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1055, 640);
+		setBounds(100, 100, 1080, 640);
 
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -210,7 +225,7 @@ public class MainForm extends JFrame {
 		cboSelectAgent.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) 
 			{
-				
+
 				// when the user selects an agent, run this method 
 
 				//get the selected agent object and fill textboxes with data 
@@ -243,10 +258,10 @@ public class MainForm extends JFrame {
 
 				// enable the required buttons
 				enableButtons();
-				
+
 				btnInactive.setEnabled(true);
 				//cboAgencyID.setEnabled(true);
-				
+
 
 				// refresh the frame
 				SwingUtilities.updateComponentTreeUI(tabbedPane);
@@ -436,7 +451,7 @@ public class MainForm extends JFrame {
 			{
 				// make this panel invisible
 				layeredPaneReassignCustomers.setVisible(false);
-				
+
 			}
 		});
 		btnCancel.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -492,7 +507,7 @@ public class MainForm extends JFrame {
 			public void itemStateChanged(ItemEvent arg0) 
 			{
 				// event handler for the Select Package combo box 
-				
+
 				if (cboSelectPackage.getSelectedIndex() == -1 || cboSelectPackage.getSelectedIndex() == 0)
 				{
 					return;
@@ -531,6 +546,12 @@ public class MainForm extends JFrame {
 
 				// refresh the frame
 				SwingUtilities.updateComponentTreeUI(tabbedPane);
+
+				//test: print out the package products
+				package_products = pkg.getPackageProducts(pkg);
+				package_product_suppliers = pkg.getPackageProductSuppliers(package_products);
+				
+				pkgTableModel(package_products,package_product_suppliers);
 			}
 		});
 		panelPackageInfo.add(cboSelectPackage, "4, 2, fill, default");
@@ -591,7 +612,7 @@ public class MainForm extends JFrame {
 		panelPackageInfo.add(txtCommission, "4, 14, fill, default");
 
 		JLayeredPane layeredPane = new JLayeredPane();
-		layeredPane.setBounds(443, 50, 324, 413);
+		layeredPane.setBounds(407, 50, 360, 413);
 		tabPackages.add(layeredPane);
 		layeredPane.setVisible(false);
 
@@ -623,7 +644,7 @@ public class MainForm extends JFrame {
 		layeredPane.add(lblAddProducts);
 
 		JPanel panel = new JPanel();
-		panel.setBounds(34, 75, 262, 239);
+		panel.setBounds(12, 75, 336, 239);
 		layeredPane.add(panel);
 		panel.setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
@@ -644,17 +665,69 @@ public class MainForm extends JFrame {
 		lblProductName.setFont(new Font("Tahoma", Font.BOLD, 15));
 		panel.add(lblProductName, "2, 4, right, default");
 
-		cboProducts = new JComboBox();
+		all_products = getAllProducts();
+		cboProducts = new JComboBox(all_products.toArray());
+
+		cboSupplier = new JComboBox(product_suppliers.toArray());
+		panel.add(cboSupplier, "4, 8, fill, default");
+
+		cboProducts.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				Product selectedProduct = (Product) cboProducts.getSelectedItem();
+				product_suppliers = getProductSuppliers(selectedProduct);
+				//product_suppliers = selectedProduct.getSuppliers();
+				//				for (int i=0; i<product_suppliers.size(); i++)
+				//				{
+				//					System.out.println(product_suppliers.get(i));
+				//				}
+
+				if (!product_suppliers.isEmpty())
+				{
+					DefaultComboBoxModel model = new DefaultComboBoxModel( product_suppliers.toArray() );
+					cboSupplier.setModel( model );
+					//cboSupplier.setModel( product_suppliers.toArray());
+					//cboSupplier = JComboBox(product_suppliers.toArray());
+
+				}
+
+				panel.add(cboSupplier, "4, 8, fill, default");
+				// refresh the frame
+				SwingUtilities.updateComponentTreeUI(tabbedPane);
+			}
+		});
 		panel.add(cboProducts, "4, 4, fill, default");
 
 		JLabel lblSupplier = new JLabel("Supplier:");
 		lblSupplier.setFont(new Font("Tahoma", Font.BOLD, 15));
 		panel.add(lblSupplier, "2, 8, right, default");
 
-		cboSupplier = new JComboBox();
-		panel.add(cboSupplier, "4, 8, fill, default");
+		//Agent a = (Agent) cboSelectAgent.getSelectedItem();
+		//List<Customer> customers = a.getAgentCustomers(a);
+		//if(customers.isEmpty())
+		//cboSupplier = new JComboBox(product_suppliers.toArray());
+		//		if (!product_suppliers.isEmpty())
+		//		{
+		//			cboSupplier = new JComboBox(product_suppliers.toArray());
+		//		}
+		//		else
+		//		{
+		//			cboSupplier = new JComboBox();
+		//		}
+
+		//		for (int i=0; i<product_suppliers.size(); i++)
+		//		{
+		//			System.out.println(product_suppliers.get(i));
+		//		}
+		//		cboSupplier = new JComboBox();
+		//		DefaultComboBoxModel model = new DefaultComboBoxModel( product_suppliers.toArray() );
+		//		cboSupplier.setModel( model );
+
+		//panel.add(cboSupplier, "4, 8, fill, default");
 
 		btnAddProducts = new JButton("Add Products");
+		btnAddProducts.setBounds(157, 438, 132, 25);
 		btnAddProducts.setEnabled(false);
 		btnAddProducts.addMouseListener(new MouseAdapter() 
 		{
@@ -664,8 +737,8 @@ public class MainForm extends JFrame {
 				// don't allow the user to click on it if it's disabled
 				if (!btnAddProducts.isEnabled()) 
 				{
-		            return;
-		        }
+					return;
+				}
 				// This button will open the layered pane containing controls for adding products to a package
 				layeredPane.setVisible(true);
 
@@ -673,8 +746,21 @@ public class MainForm extends JFrame {
 				btnAddProducts.setEnabled(false);
 			}
 		});
-		btnAddProducts.setBounds(153, 335, 132, 25);
 		tabPackages.add(btnAddProducts);
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(20, 303, 360, 111);
+		tabPackages.add(scrollPane);
+
+		// data for the table
+		String[] columnNames = new String[] {"Product", "Supplier"};
+		Object[][] products = new Object[][] 
+				{
+				//fill with data from the products supplier list
+				};
+
+		table = new JTable( products, columnNames);
+		scrollPane.setViewportView(table);
 
 		JPanel panelButtons = new JPanel();
 		panelButtons.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -707,7 +793,7 @@ public class MainForm extends JFrame {
 					// set the agent form fields to enabled
 					enableAgentFormFields();
 					resetAgentForm();
-					
+
 					btnEdit.setEnabled(false);
 					// set the selected Agent to null
 					cboSelectAgent.setSelectedIndex(0);
@@ -952,7 +1038,7 @@ public class MainForm extends JFrame {
 			{
 				// reset the form
 				selectedTab = tabbedPane.getSelectedIndex();
-				
+
 				if (selectedTab == 0) //Agents Tab
 				{
 					resetAgentForm();
@@ -964,7 +1050,7 @@ public class MainForm extends JFrame {
 					disablePackageForm();			
 				}
 				disableButtons();
-				
+
 			}
 		});
 		btnResetForm.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -1156,5 +1242,54 @@ public class MainForm extends JFrame {
 		txtCommission.setText("");
 		txtPrice.setText("");
 		txtDescription.setText("");
+	}
+
+	protected List<?> getAllProducts()
+	{
+		//Garima
+		//begin session and transaction
+		session = HibernateUtilities.getSession();
+
+		Query queryFindAllProducts = session.getNamedQuery("Product.findAll");
+		List<?> allPrdctList = queryFindAllProducts.list();
+
+		session.close();
+
+		//insert a null agent
+		//Agent nullAgent = new Agent();
+
+		allPrdctList.add(0, null);
+
+		return allPrdctList;      
+	}
+
+	protected List<?> getProductSuppliers(Product p)
+	{
+		return p.getSuppliers();
+	}
+
+	public static void pkgTableModel(List<?> products, List<?> suppliers)
+	{
+		//column names
+		//Vector<String> columnNames = new Vector<String>();
+		//columnNames.add("Product");
+		//columnNames.add("Supplier");
+		String[] columnNames = new String[] {"Product", "Supplier"};
+		//row data
+		//Vector<String> rowData = new Vector<String>();
+		String[][] rowData = new String[][] {};
+		for (int i = 0; i<products.size();i++)
+		{	
+			//for (int j = 0; i<products.size();i++)
+			Product p = (Product) products.get(i);
+			Supplier s = (Supplier) suppliers.get(i);
+			rowData[i][0] = p.getProdName();
+			rowData[i][1]= s.getSupName();
+			System.out.println(rowData[i][0] + " " + rowData[i][1] );
+			
+		}
+		//DefaultTableModel model = DefaultTableModel(rowData, columnNames);
+		
+		//return model;
 	}
 }

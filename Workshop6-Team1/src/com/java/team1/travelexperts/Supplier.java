@@ -1,7 +1,9 @@
 package com.java.team1.travelexperts;
 
 import java.io.Serializable;
+
 import javax.persistence.*;
+
 import java.util.List;
 
 
@@ -51,6 +53,13 @@ public class Supplier implements Serializable {
 
 	public void setProducts(List<Product> products) {
 		this.products = products;
+	}
+	
+	// Override toString Method
+	@Override
+	public String toString() 
+	{
+		return getSupName();
 	}
 
 }
