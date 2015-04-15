@@ -48,6 +48,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -1268,8 +1269,9 @@ public class MainForm extends JFrame {
 		return p.getSuppliers();
 	}
 
-	public static void pkgTableModel(List<?> products, List<?> suppliers)
+	public static DefaultTableModel pkgTableModel(List<?> products, List<?> suppliers)
 	{
+		//http://java.about.com/od/Creating-Tables/ss/Defaulttablemodel-Example-Program.htm
 		//column names
 		//Vector<String> columnNames = new Vector<String>();
 		//columnNames.add("Product");
@@ -1277,19 +1279,22 @@ public class MainForm extends JFrame {
 		String[] columnNames = new String[] {"Product", "Supplier"};
 		//row data
 		//Vector<String> rowData = new Vector<String>();
-		String[][] rowData = new String[][] {};
+		
+		// combine the two lists into one list
+		//List<?> package_product_supplier_info;
+		ArrayList<String[]> package_product_supplier_info = new ArrayList<String[]>();   
+		//package_product_supplier_info.add(new ArrayList<String>());
 		for (int i = 0; i<products.size();i++)
 		{	
 			//for (int j = 0; i<products.size();i++)
 			Product p = (Product) products.get(i);
 			Supplier s = (Supplier) suppliers.get(i);
-			rowData[i][0] = p.getProdName();
-			rowData[i][1]= s.getSupName();
-			System.out.println(rowData[i][0] + " " + rowData[i][1] );
-			
+			String[] row= {p.getProdName(),s.getSupName()};  
+			package_product_supplier_info.add(row);
+			//System.out.println(row);
 		}
-		//DefaultTableModel model = DefaultTableModel(rowData, columnNames);
+		DefaultTableModel model = null;
 		
-		//return model;
+		return model;
 	}
 }
