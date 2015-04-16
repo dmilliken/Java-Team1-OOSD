@@ -103,7 +103,8 @@ public class MainForm extends JFrame {
 	private List<?> product_suppliers = Collections.emptyList();
 	private List<?> package_product_suppliers = Collections.emptyList();
 	private JTable table;
-	DefaultTableModel model;
+	private DefaultTableModel model;
+	private JButton btnSaveProducts;
 
 	/**
 	 * Launch the application.
@@ -231,7 +232,7 @@ public class MainForm extends JFrame {
 				// when the user selects an agent, run this method 
 
 				//get the selected agent object and fill textboxes with data 
-				System.out.println(cboSelectAgent.getSelectedItem());
+				//System.out.println(cboSelectAgent.getSelectedItem());
 				Agent a = (Agent) cboSelectAgent.getSelectedItem();
 				if (cboSelectAgent.getSelectedIndex() == -1 || cboSelectAgent.getSelectedIndex() == 0)
 				{
@@ -254,8 +255,8 @@ public class MainForm extends JFrame {
 				//List<?> allAgencies = getAllTravelAgencies();
 
 				// info we'll need later for saving the agency to the agent object 
-				System.out.println("Agency Selected Index is " + cboAgencyID.getSelectedIndex());
-				System.out.println("Agency Selected Item is " + cboAgencyID.getSelectedItem());
+				//System.out.println("Agency Selected Index is " + cboAgencyID.getSelectedIndex());
+				//System.out.println("Agency Selected Item is " + cboAgencyID.getSelectedItem());
 				//System.out.println("Agency Selected Object is " + cboAgencyID.getSelectedObjects().toString());
 
 				// enable the required buttons
@@ -547,12 +548,26 @@ public class MainForm extends JFrame {
 				btnAddProducts.setEnabled(true);
 
 				// get the data for the table model
+				
 				// Problem: We need to deal with the case when the model will be empty
 				if (!pkg.getProductsSuppliers().isEmpty())
 				{
 					package_products = pkg.getPackageProducts(pkg);
-					package_product_suppliers = pkg.getPackageProductSuppliers(package_products);
+					//package_product_suppliers = pkg.getPackageProductSuppliers(package_products);
+					package_product_suppliers = pkg.getPackageProductSuppliers(pkg);
 				}
+				else
+				{
+					//clear the model
+					package_products = Collections.emptyList();
+					package_product_suppliers = Collections.emptyList();
+		
+					 for( int i = model.getRowCount() - 1; i >= 0; i-- ) {
+					        model.removeRow(i);
+					    }
+					 model.setRowCount(0);
+				}
+				
 				//reset to empty list (in case it had data before) Collections.emptyList()
 //				package_products = pkg.getPackageProducts(pkg);
 //				package_product_suppliers = pkg.getPackageProductSuppliers(package_products);
@@ -560,6 +575,7 @@ public class MainForm extends JFrame {
 				//package_product_suppliers = pkg.getPackageProductSuppliers(package_products);
 				model = getPkgTableModel(package_products,package_product_suppliers);
 				table.setModel(model);
+				
 				// refresh the frame
 				SwingUtilities.updateComponentTreeUI(tabbedPane);
 			}
@@ -626,28 +642,6 @@ public class MainForm extends JFrame {
 		tabPackages.add(layeredPane);
 		layeredPane.setVisible(false);
 
-		JButton btnSaveProducts = new JButton("Save Products to Package");
-		btnSaveProducts.addMouseListener(new MouseAdapter() 
-		{
-			@Override
-			public void mouseClicked(MouseEvent e) 
-			{
-				// attempt to save the values to the DB
-				// need to write the method 
-
-				// show a message confirming success
-				//JOptionPane.showMessageDialog
-
-				// make the panel invisible 
-				layeredPane.setVisible(false);
-
-				// enable the add button
-				btnAddProducts.setEnabled(true);
-			}
-		});
-		btnSaveProducts.setBounds(86, 360, 186, 25);
-		layeredPane.add(btnSaveProducts);
-
 		JLabel lblAddProducts = new JLabel("Add Products");
 		lblAddProducts.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblAddProducts.setBounds(100, 26, 159, 20);
@@ -661,7 +655,13 @@ public class MainForm extends JFrame {
 				FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),},
-				new RowSpec[] {
+			new RowSpec[] {
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
@@ -687,23 +687,16 @@ public class MainForm extends JFrame {
 			{
 				Product selectedProduct = (Product) cboProducts.getSelectedItem();
 				product_suppliers = getProductSuppliers(selectedProduct);
-				//product_suppliers = selectedProduct.getSuppliers();
-				//				for (int i=0; i<product_suppliers.size(); i++)
-				//				{
-				//					System.out.println(product_suppliers.get(i));
-				//				}
 
 				if (!product_suppliers.isEmpty())
 				{
 					DefaultComboBoxModel model = new DefaultComboBoxModel( product_suppliers.toArray() );
 					cboSupplier.setModel( model );
-					//cboSupplier.setModel( product_suppliers.toArray());
-					//cboSupplier = JComboBox(product_suppliers.toArray());
-
 				}
 
 				panel.add(cboSupplier, "4, 8, fill, default");
-
+				
+				btnSaveProducts.setEnabled(true);
 				// refresh the frame
 				SwingUtilities.updateComponentTreeUI(tabbedPane);
 			}
@@ -713,6 +706,44 @@ public class MainForm extends JFrame {
 		JLabel lblSupplier = new JLabel("Supplier:");
 		lblSupplier.setFont(new Font("Tahoma", Font.BOLD, 15));
 		panel.add(lblSupplier, "2, 8, right, default");
+		
+				btnSaveProducts = new JButton("Save Products to Package");
+				btnSaveProducts.setEnabled(false);
+				panel.add(btnSaveProducts, "4, 12");
+				
+				JButton btnCancelSaveProducts = new JButton("Cancel");
+				btnCancelSaveProducts.addMouseListener(new MouseAdapter() 
+				{
+					@Override
+					public void mouseClicked(MouseEvent arg0) 
+					{
+						// cancel saving a product to a package
+						layeredPane.setVisible(false);
+						btnAddProducts.setEnabled(true);
+						cboSupplier.removeAllItems();
+					}
+				});
+				panel.add(btnCancelSaveProducts, "4, 14");
+				btnSaveProducts.addMouseListener(new MouseAdapter() 
+				{
+					@Override
+					public void mouseClicked(MouseEvent e) 
+					{
+						// attempt to save the values to the DB
+						// need to write the method 
+
+						// show a message confirming success
+						//JOptionPane.showMessageDialog
+
+						// make the panel invisible 
+						layeredPane.setVisible(false);
+
+						// enable the add button
+						btnAddProducts.setEnabled(true);
+						
+						cboSupplier.removeAllItems();
+					}
+				});
 
 		//panel.add(cboSupplier, "4, 8, fill, default");
 
@@ -779,7 +810,7 @@ public class MainForm extends JFrame {
 
 				if (selectedTab == 0) //Agents Tab
 				{
-					System.out.println(cboSelectAgent.getSelectedIndex());
+					//System.out.println(cboSelectAgent.getSelectedIndex());
 					// set the agent form fields to enabled
 					enableAgentFormFields();
 					resetAgentForm();
@@ -853,7 +884,7 @@ public class MainForm extends JFrame {
 				if (selectedTab == 0) //Agents Tab
 				{
 					// validate entries
-					System.out.println("Selected index is " + cboSelectAgent.getSelectedIndex() );
+					// System.out.println("Selected index is " + cboSelectAgent.getSelectedIndex() );
 
 					if (Validator.isPresent(txtFirstName, "First Name") &&
 							Validator.isPresent(txtLastName, "Last Name") &&
@@ -861,13 +892,13 @@ public class MainForm extends JFrame {
 							Validator.isPresent(txtEmail, "E-Mail") &&
 							Validator.isPresent(txtPosition, "Position"))
 					{
-						System.out.println("Agent is Valid!");
+						//System.out.println("Agent is Valid!");
 						//}					
 						// detect if the agent is new or existing
 						if (cboSelectAgent.getSelectedIndex() == -1)
 						{
 							// new agent
-							System.out.println("creating a new agent");
+							//System.out.println("creating a new agent");
 							Agent a = new Agent();
 
 
@@ -901,7 +932,7 @@ public class MainForm extends JFrame {
 						{
 
 							// then we are editing an existing agent 
-							System.out.println("editing an existing agent");
+							//System.out.println("editing an existing agent");
 
 							// get the current agent 
 							Agent a = (Agent) cboSelectAgent.getSelectedItem();
@@ -954,7 +985,7 @@ public class MainForm extends JFrame {
 							Validator.isValidPrice(txtPrice, txtCommission, "Price", "Commission")
 							)
 					{
-						System.out.println("Valid!");
+						//System.out.println("Valid!");
 						// valid, so now determine if it's a new or existing package 
 						if (cboSelectPackage.getSelectedIndex() == -1)
 						{
@@ -994,7 +1025,7 @@ public class MainForm extends JFrame {
 					}
 					else
 					{
-						System.out.println("Invalid!");
+						//System.out.println("Invalid!");
 					}
 
 				} //end elseif
@@ -1037,7 +1068,8 @@ public class MainForm extends JFrame {
 				else if (selectedTab == 1) //Packages Tab
 				{
 					resetPackageForm();
-					disablePackageForm();			
+					disablePackageForm();	
+					layeredPane.setVisible(false);
 				}
 				disableButtons();
 
@@ -1091,7 +1123,7 @@ public class MainForm extends JFrame {
 
 	protected void enableAgentFormFields() 
 	{
-		System.out.println("in the enableAgentFormFields() method");
+		//System.out.println("in the enableAgentFormFields() method");
 		// method to turn the agent form fields to enabled
 		// trigger when the user selects "Add" while on the Agents Tab
 		cboSelectAgent.setEnabled(true);
@@ -1107,7 +1139,7 @@ public class MainForm extends JFrame {
 
 	protected void enablePackagesFormFields() 
 	{
-		System.out.println("in the enablePackagesFormFields() method");
+		//System.out.println("in the enablePackagesFormFields() method");
 		// method to turn the package form fields to enabled
 		// trigger when the user selects "Add" while on the Packages Tab
 		cboSelectPackage.setEditable(true); 
@@ -1134,7 +1166,7 @@ public class MainForm extends JFrame {
 			for (int i = 0; i < allAgenciesList.size(); i++) 
 			{
 				Agency agcy = (Agency) allAgenciesList.get(i);
-				System.out.println("Agency # " + agcy.getAgencyId() + " is in " + agcy.getAgncyCity());
+				//System.out.println("Agency # " + agcy.getAgencyId() + " is in " + agcy.getAgncyCity());
 			}
 		}
 		session.close();
@@ -1232,6 +1264,15 @@ public class MainForm extends JFrame {
 		txtCommission.setText("");
 		txtPrice.setText("");
 		txtDescription.setText("");
+		
+		// clear the model
+		package_products = Collections.emptyList();
+		package_product_suppliers = Collections.emptyList();
+
+		 for( int i = model.getRowCount() - 1; i >= 0; i-- ) {
+		        model.removeRow(i);
+		    }
+		 model.setRowCount(0);
 	}
 
 	protected List<?> getAllProducts()
@@ -1270,10 +1311,13 @@ public class MainForm extends JFrame {
 		//package_product_supplier_info.add(new ArrayList<String>());
 		
 		//deal with the case where the model will be empty
-		
+		System.out.println("products has " + products.size() +" elements");
+		System.out.println("suppliers has " + suppliers.size() +" elements");
 		if (products.isEmpty())
 		{
+			values.clear();
 			values.add(new String[] {" ", " "});
+			
 		}
 		else
 		{
@@ -1281,8 +1325,7 @@ public class MainForm extends JFrame {
 			{	
 				Product p = (Product) products.get(i);
 				Supplier s = (Supplier) suppliers.get(i);
-				values.add(new String[] {p.getProdName() , s.getSupName()});
-				
+				values.add(new String[] {p.getProdName() , s.getSupName()});				
 			}
 		}
 		for (int i = 0; i<values.size();i++)
@@ -1298,4 +1341,5 @@ public class MainForm extends JFrame {
 
 		return model;
 	}
+
 }

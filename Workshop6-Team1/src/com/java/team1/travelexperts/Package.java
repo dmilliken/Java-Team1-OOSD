@@ -131,7 +131,7 @@ public class Package implements Serializable {
 	
 	public List<?> getPackageProducts(Package p)
 	{
-		System.out.println("Getting package products");
+		System.out.println("Creating the package products list.");
 		Session session = null;
 		List<?> prodlist = null;
 		try
@@ -148,6 +148,7 @@ public class Package implements Serializable {
 				for (int j=0; j<prodlist.size(); j++)
 				{
 					Product pr = (Product) prodlist.get(j);
+					
 					System.out.println(pr.getProdName());
 				}
 			}
@@ -161,26 +162,29 @@ public class Package implements Serializable {
 		{session.close();}
 		return prodlist;
 	}
-	
-	public List<?> getPackageProductSuppliers(List<?> packageproducts)
+
+	public List<?> getPackageProductSuppliers(Package p)
 	{
-		// pass in a list of products in the desired package, return a list of suppliers for those products
-		System.out.println("Getting package product suppliers");
+		System.out.println("Creating the package suppliers list.");
 		Session session = null;
 		List<?> suplist = null;
 		try
 		{
 			session = HibernateUtilities.getSession();
-			for (int i=0; i<packageproducts.size(); i++)
+			List<?> prod_sups = p.getProductsSuppliers();
+			for (int i=0; i<prod_sups.size(); i++)
 			{
-				Product p = (Product) packageproducts.get(i);
-				suplist = p.getSuppliers();
-			}
-			// print out the result to check
-			for (int i=0; i<suplist.size(); i++)
-			{
-				Supplier s = (Supplier) suplist.get(i);
-				System.out.println(s.getSupName());
+				ProductsSupplier ps = (ProductsSupplier) prod_sups.get(i);
+				//for each row, store the product name
+				Query prod_query = session.createQuery("from Supplier where SupplierId = :id ");
+				prod_query.setParameter("id", ps.getSupplierId());
+				suplist = prod_query.list();  //this is a list of all of these package's products
+				for (int j=0; j<suplist.size(); j++)
+				{
+					Supplier s = (Supplier) suplist.get(j);
+					
+					System.out.println(s.getSupName());
+				}
 			}
 		}//end try
 		catch (HibernateException e)
@@ -192,6 +196,38 @@ public class Package implements Serializable {
 		{session.close();}
 		return suplist;
 	}
+	
+//	public List<?> getPackageProductSuppliers(List<?> packageproducts)
+//	{
+//		// pass in a list of products in the desired package, return a list of suppliers for those products
+//		System.out.println("Getting package product suppliers");
+//		Session session = null;
+//		List<?> suplist = null;
+//		try
+//		{
+//			session = HibernateUtilities.getSession();
+//			for (int i=0; i<packageproducts.size(); i++)
+//			{
+//				Product p = (Product) packageproducts.get(i);
+//				suplist = p.getSuppliers();
+//			}
+//			// print out the result to check
+//			for (int i=0; i<suplist.size(); i++)
+//			{
+//				Supplier s = (Supplier) suplist.get(i);
+//				System.out.println(s.getSupName());
+//			}
+//		}//end try
+//		catch (HibernateException e)
+//		{
+//			e.printStackTrace();
+//			
+//		}
+//		finally
+//		{session.close();}
+//		return suplist;
+//	}
+	
 	
 	// Garima Code 
 
