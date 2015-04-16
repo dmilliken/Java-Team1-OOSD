@@ -10,6 +10,8 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -54,6 +56,10 @@ public class Package implements Serializable {
 			}
 			)
 	private List<ProductsSupplier> productsSuppliers;
+
+	//private Product pr;
+
+	//private Product q;
 
 	public Package() {
 	}
@@ -133,7 +139,9 @@ public class Package implements Serializable {
 	{
 		System.out.println("Creating the package products list.");
 		Session session = null;
-		List<?> prodlist = null;
+		String[] products = new String[10];
+		List<?> prodlist = Collections.emptyList();
+	
 		try
 		{
 			session = HibernateUtilities.getSession();
@@ -145,12 +153,15 @@ public class Package implements Serializable {
 				Query prod_query = session.createQuery("from Product where ProductId = :id ");
 				prod_query.setParameter("id", ps.getProductId());
 				prodlist = prod_query.list();  //this is a list of all of these package's products
-				for (int j=0; j<prodlist.size(); j++)
+				
+				for (int j=0; j < prodlist.size();j++)
 				{
-					Product pr = (Product) prodlist.get(j);
-					
-					System.out.println(pr.getProdName());
+				Product pr = (Product) prodlist.get(j);
+				//System.out.print("pr is "+pr);
+				products[i] = pr.getProdName();
+				//System.out.print(pr.getProdName());
 				}
+				
 			}
 		}//end try
 		catch (HibernateException e)
@@ -160,6 +171,7 @@ public class Package implements Serializable {
 		}
 		finally
 		{session.close();}
+		System.out.println("In method: products has " + prodlist.size() + " elements.");
 		return prodlist;
 	}
 

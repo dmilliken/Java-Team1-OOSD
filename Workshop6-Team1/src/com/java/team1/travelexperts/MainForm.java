@@ -50,6 +50,7 @@ import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -568,11 +569,7 @@ public class MainForm extends JFrame {
 					 model.setRowCount(0);
 				}
 				
-				//reset to empty list (in case it had data before) Collections.emptyList()
-//				package_products = pkg.getPackageProducts(pkg);
-//				package_product_suppliers = pkg.getPackageProductSuppliers(package_products);
-
-				//package_product_suppliers = pkg.getPackageProductSuppliers(package_products);
+				System.out.println("Before: products has " + package_products.size() + " elements.");
 				model = getPkgTableModel(package_products,package_product_suppliers);
 				table.setModel(model);
 				
@@ -1302,13 +1299,11 @@ public class MainForm extends JFrame {
 	public static DefaultTableModel getPkgTableModel(List<?> products, List<?> suppliers)
 	{
 		// http://stackoverflow.com/questions/11095802/populate-jtable-using-list
-		//String[] columnNames = new String[] {"Product", "Supplier"};
+		
 		List<String> columns = new ArrayList<String>();
 		columns.add("Product");
 		columns.add("Supplier");
 		List<String[]> values = new ArrayList<String[]>();
-		//ArrayList<String[]> package_product_supplier_info = new ArrayList<String[]>();   
-		//package_product_supplier_info.add(new ArrayList<String>());
 		
 		//deal with the case where the model will be empty
 		System.out.println("products has " + products.size() +" elements");
@@ -1317,7 +1312,6 @@ public class MainForm extends JFrame {
 		{
 			values.clear();
 			values.add(new String[] {" ", " "});
-			
 		}
 		else
 		{
@@ -1325,7 +1319,7 @@ public class MainForm extends JFrame {
 			{	
 				Product p = (Product) products.get(i);
 				Supplier s = (Supplier) suppliers.get(i);
-				values.add(new String[] {p.getProdName() , s.getSupName()});				
+				values.add(new String[] {p.getProdName() , s.getSupName()});
 			}
 		}
 		for (int i = 0; i<values.size();i++)
@@ -1336,7 +1330,8 @@ public class MainForm extends JFrame {
 				System.out.println(s[i]);
 			}
 		}
-		//DefaultTableModel model = null;
+		
+		
 		DefaultTableModel model = new DefaultTableModel(values.toArray(new Object[][] {}), columns.toArray());
 
 		return model;
