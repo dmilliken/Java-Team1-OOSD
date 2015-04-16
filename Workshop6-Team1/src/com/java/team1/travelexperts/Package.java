@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -135,11 +136,51 @@ public class Package implements Serializable {
 		return getPkgName();
 	}
 	
+//	public List<?> getPackageProducts(Package p)
+//	{
+//		System.out.println("Creating the package products list.");
+//		Session session = null;
+//		String[] products = new String[10];
+//		List<?> prodlist = Collections.emptyList();
+//	
+//		try
+//		{
+//			session = HibernateUtilities.getSession();
+//			List<?> prod_sups = p.getProductsSuppliers();
+//			for (int i=0; i<prod_sups.size(); i++)
+//			{
+//				ProductsSupplier ps = (ProductsSupplier) prod_sups.get(i);
+//				//for each row, store the product name
+//				Query prod_query = session.createQuery("from Product where ProductId = :id ");
+//				prod_query.setParameter("id", ps.getProductId());
+//				prodlist = prod_query.list();  //this is a list of all of these package's products
+//				
+//				for (int j=0; j < prodlist.size();j++)
+//				{
+//				Product pr = (Product) prodlist.get(j);
+//				//System.out.print("pr is "+pr);
+//				products[i] = pr.getProdName();
+//				//System.out.print(pr.getProdName());
+//				}
+//				
+//			}
+//		}//end try
+//		catch (HibernateException e)
+//		{
+//			e.printStackTrace();
+//			
+//		}
+//		finally
+//		{session.close();}
+//		System.out.println("In method: products has " + prodlist.size() + " elements.");
+//		return prodlist;
+//	}
+	
 	public List<?> getPackageProducts(Package p)
 	{
 		System.out.println("Creating the package products list.");
 		Session session = null;
-		String[] products = new String[10];
+		Product[] products = new Product[10];
 		List<?> prodlist = Collections.emptyList();
 	
 		try
@@ -158,11 +199,11 @@ public class Package implements Serializable {
 				{
 				Product pr = (Product) prodlist.get(j);
 				//System.out.print("pr is "+pr);
-				products[i] = pr.getProdName();
+				products[i] = pr;
 				//System.out.print(pr.getProdName());
 				}
-				
 			}
+			
 		}//end try
 		catch (HibernateException e)
 		{
@@ -171,15 +212,17 @@ public class Package implements Serializable {
 		}
 		finally
 		{session.close();}
-		System.out.println("In method: products has " + prodlist.size() + " elements.");
-		return prodlist;
+		
+		//return prodlist;
+		return Arrays.asList(products);
 	}
-
+	
 	public List<?> getPackageProductSuppliers(Package p)
 	{
 		System.out.println("Creating the package suppliers list.");
 		Session session = null;
-		List<?> suplist = null;
+		List<?> suplist = Collections.emptyList();
+		Supplier[] suppliers = new Supplier[10];
 		try
 		{
 			session = HibernateUtilities.getSession();
@@ -194,8 +237,8 @@ public class Package implements Serializable {
 				for (int j=0; j<suplist.size(); j++)
 				{
 					Supplier s = (Supplier) suplist.get(j);
-					
 					System.out.println(s.getSupName());
+					suppliers[i] = s;
 				}
 			}
 		}//end try
@@ -206,8 +249,43 @@ public class Package implements Serializable {
 		}
 		finally
 		{session.close();}
-		return suplist;
+		//return suplist;
+		return Arrays.asList(suppliers);
 	}
+
+//	public List<?> getPackageProductSuppliers(Package p)
+//	{
+//		System.out.println("Creating the package suppliers list.");
+//		Session session = null;
+//		List<?> suplist = null;
+//		try
+//		{
+//			session = HibernateUtilities.getSession();
+//			List<?> prod_sups = p.getProductsSuppliers();
+//			for (int i=0; i<prod_sups.size(); i++)
+//			{
+//				ProductsSupplier ps = (ProductsSupplier) prod_sups.get(i);
+//				//for each row, store the product name
+//				Query prod_query = session.createQuery("from Supplier where SupplierId = :id ");
+//				prod_query.setParameter("id", ps.getSupplierId());
+//				suplist = prod_query.list();  //this is a list of all of these package's products
+//				for (int j=0; j<suplist.size(); j++)
+//				{
+//					Supplier s = (Supplier) suplist.get(j);
+//					
+//					System.out.println(s.getSupName());
+//				}
+//			}
+//		}//end try
+//		catch (HibernateException e)
+//		{
+//			e.printStackTrace();
+//			
+//		}
+//		finally
+//		{session.close();}
+//		return suplist;
+//	}
 	
 //	public List<?> getPackageProductSuppliers(List<?> packageproducts)
 //	{
