@@ -14,6 +14,7 @@ import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
@@ -97,12 +98,12 @@ public class MainForm extends JFrame {
 	Session session;
 	private JComboBox cboProducts;
 	private JComboBox cboSupplier;
-	private List<?> all_products;
-	private List<?> package_products = null;
+	private List<?> all_products = Collections.emptyList();
+	private List<?> package_products = Collections.emptyList();
 	private List<?> product_suppliers = Collections.emptyList();
 	private List<?> package_product_suppliers = Collections.emptyList();
 	private JTable table;
-	//private List<?> product_suppliers= null;
+	DefaultTableModel model;
 
 	/**
 	 * Launch the application.
@@ -545,14 +546,21 @@ public class MainForm extends JFrame {
 				enableButtons();
 				btnAddProducts.setEnabled(true);
 
+				// get the data for the table model
+				// Problem: We need to deal with the case when the model will be empty
+				if (!pkg.getProductsSuppliers().isEmpty())
+				{
+					package_products = pkg.getPackageProducts(pkg);
+					package_product_suppliers = pkg.getPackageProductSuppliers(package_products);
+				}
+//				package_products = pkg.getPackageProducts(pkg);
+//				package_product_suppliers = pkg.getPackageProductSuppliers(package_products);
+
+				//package_product_suppliers = pkg.getPackageProductSuppliers(package_products);
+				model = getPkgTableModel(package_products,package_product_suppliers);
+				table.setModel(model);
 				// refresh the frame
 				SwingUtilities.updateComponentTreeUI(tabbedPane);
-
-				//test: print out the package products
-				package_products = pkg.getPackageProducts(pkg);
-				package_product_suppliers = pkg.getPackageProductSuppliers(package_products);
-				
-				pkgTableModel(package_products,package_product_suppliers);
 			}
 		});
 		panelPackageInfo.add(cboSelectPackage, "4, 2, fill, default");
@@ -694,6 +702,7 @@ public class MainForm extends JFrame {
 				}
 
 				panel.add(cboSupplier, "4, 8, fill, default");
+
 				// refresh the frame
 				SwingUtilities.updateComponentTreeUI(tabbedPane);
 			}
@@ -703,27 +712,6 @@ public class MainForm extends JFrame {
 		JLabel lblSupplier = new JLabel("Supplier:");
 		lblSupplier.setFont(new Font("Tahoma", Font.BOLD, 15));
 		panel.add(lblSupplier, "2, 8, right, default");
-
-		//Agent a = (Agent) cboSelectAgent.getSelectedItem();
-		//List<Customer> customers = a.getAgentCustomers(a);
-		//if(customers.isEmpty())
-		//cboSupplier = new JComboBox(product_suppliers.toArray());
-		//		if (!product_suppliers.isEmpty())
-		//		{
-		//			cboSupplier = new JComboBox(product_suppliers.toArray());
-		//		}
-		//		else
-		//		{
-		//			cboSupplier = new JComboBox();
-		//		}
-
-		//		for (int i=0; i<product_suppliers.size(); i++)
-		//		{
-		//			System.out.println(product_suppliers.get(i));
-		//		}
-		//		cboSupplier = new JComboBox();
-		//		DefaultComboBoxModel model = new DefaultComboBoxModel( product_suppliers.toArray() );
-		//		cboSupplier.setModel( model );
 
 		//panel.add(cboSupplier, "4, 8, fill, default");
 
@@ -760,7 +748,7 @@ public class MainForm extends JFrame {
 				//fill with data from the products supplier list
 				};
 
-		table = new JTable( products, columnNames);
+		table = new JTable(model);
 		scrollPane.setViewportView(table);
 
 		JPanel panelButtons = new JPanel();
@@ -1269,32 +1257,35 @@ public class MainForm extends JFrame {
 		return p.getSuppliers();
 	}
 
-	public static DefaultTableModel pkgTableModel(List<?> products, List<?> suppliers)
+	public static DefaultTableModel getPkgTableModel(List<?> products, List<?> suppliers)
 	{
-		//http://java.about.com/od/Creating-Tables/ss/Defaulttablemodel-Example-Program.htm
-		//column names
-		//Vector<String> columnNames = new Vector<String>();
-		//columnNames.add("Product");
-		//columnNames.add("Supplier");
-		String[] columnNames = new String[] {"Product", "Supplier"};
-		//row data
-		//Vector<String> rowData = new Vector<String>();
-		
-		// combine the two lists into one list
-		//List<?> package_product_supplier_info;
-		ArrayList<String[]> package_product_supplier_info = new ArrayList<String[]>();   
+		// http://stackoverflow.com/questions/11095802/populate-jtable-using-list
+		//String[] columnNames = new String[] {"Product", "Supplier"};
+		List<String> columns = new ArrayList<String>();
+		columns.add("Product");
+		columns.add("Supplier");
+		List<String[]> values = new ArrayList<String[]>();
+		//ArrayList<String[]> package_product_supplier_info = new ArrayList<String[]>();   
 		//package_product_supplier_info.add(new ArrayList<String>());
-		for (int i = 0; i<products.size();i++)
-		{	
-			//for (int j = 0; i<products.size();i++)
-			Product p = (Product) products.get(i);
-			Supplier s = (Supplier) suppliers.get(i);
-			String[] row= {p.getProdName(),s.getSupName()};  
-			package_product_supplier_info.add(row);
-			//System.out.println(row);
-		}
-		DefaultTableModel model = null;
 		
+		//deal with the case where the model will be empty
+		if (products.isEmpty())
+		{
+			values.add(new String[] {" ", " "});
+		}
+		else
+		{
+			for (int i = 0; i<products.size();i++)
+			{	
+				Product p = (Product) products.get(i);
+				Supplier s = (Supplier) suppliers.get(i);
+				values.add(new String[] {p.getProdName() , s.getSupName()});
+			}
+		}
+		//DefaultTableModel model = null;
+		DefaultTableModel model = new DefaultTableModel(values.toArray(new Object[][] {}), columns.toArray());
+
+
 		return model;
 	}
 }
