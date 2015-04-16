@@ -553,6 +553,7 @@ public class MainForm extends JFrame {
 					package_products = pkg.getPackageProducts(pkg);
 					package_product_suppliers = pkg.getPackageProductSuppliers(package_products);
 				}
+				//reset to empty list (in case it had data before) Collections.emptyList()
 //				package_products = pkg.getPackageProducts(pkg);
 //				package_product_suppliers = pkg.getPackageProductSuppliers(package_products);
 
@@ -1269,6 +1270,7 @@ public class MainForm extends JFrame {
 		//package_product_supplier_info.add(new ArrayList<String>());
 		
 		//deal with the case where the model will be empty
+		
 		if (products.isEmpty())
 		{
 			values.add(new String[] {" ", " "});
@@ -1280,11 +1282,19 @@ public class MainForm extends JFrame {
 				Product p = (Product) products.get(i);
 				Supplier s = (Supplier) suppliers.get(i);
 				values.add(new String[] {p.getProdName() , s.getSupName()});
+				
+			}
+		}
+		for (int i = 0; i<values.size();i++)
+		{
+			String[] s = values.get(i);
+			for (int j = 0; j<s.length;j++)
+			{
+				System.out.println(s[i]);
 			}
 		}
 		//DefaultTableModel model = null;
 		DefaultTableModel model = new DefaultTableModel(values.toArray(new Object[][] {}), columns.toArray());
-
 
 		return model;
 	}
