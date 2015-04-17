@@ -726,21 +726,40 @@ public class MainForm extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) 
 			{
-				// attempt to save the values to the DB
-				// need to write the method 
-
-				// show a message confirming success
-				//JOptionPane.showMessageDialog
-
-				// make the panel invisible 
-				layeredPane.setVisible(false);
-
-				// enable the add button
-				btnAddProducts.setEnabled(true);
-
-				cboSupplier.removeAllItems();
-				
 				// save product/supplier to database table packages_product_supplier
+				Product selectedProduct = (Product) cboProducts.getSelectedItem();
+				Supplier selectedSupplier = (Supplier) cboSupplier.getSelectedItem();
+				Package selectedPackage =(Package) cboSelectPackage.getSelectedItem();
+				
+				// SELECT p FROM ProductsSupplier p
+				int ProductSupplierId = ProductsSupplier.getProductSupplier(selectedProduct.getProductId(), selectedSupplier.getSupplierId());
+				if (ProductSupplierId != -1)
+				{
+					if (Package.createPkgProdSup(selectedPackage.getPackageId(), ProductSupplierId))
+					{
+						// if the insert was successful 
+						// show a message confirming success
+						JOptionPane.showMessageDialog(tabbedPane, "Successfully added the product! ");
+
+						// make the panel invisible 
+						layeredPane.setVisible(false);
+						// enable buttons
+						btnAddProducts.setEnabled(true);
+						cboSupplier.removeAllItems();
+						
+						//update the model
+						//model.insertRow(model.getRowCount()+1, new String[] {selectedProduct.getProdName() , selectedSupplier.getSupName()});
+						 model.addRow(new String[] {selectedProduct.getProdName() , selectedSupplier.getSupName()});
+						// values.add(new String[] {p.getProdName() , s.getSupName()});
+						
+						//refresh the frame and JTable 
+						SwingUtilities.updateComponentTreeUI(tabbedPane);
+						model.fireTableDataChanged();
+						table.repaint();
+					}
+				}
+				
+				
 			}
 		});
 
