@@ -225,6 +225,7 @@ public class MainForm extends JFrame {
 		List<?> allAgentsList = getAllTravelAgents();
 
 		cboSelectAgent = new JComboBox(allAgentsList.toArray());
+		cboSelectAgent.setEditable(true);
 		//cboSelectAgent.insertItemAt("", 0);
 		cboSelectAgent.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) 
@@ -506,6 +507,7 @@ public class MainForm extends JFrame {
 
 		List<?> allPackagesList = getAllPackages();
 		cboSelectPackage = new JComboBox(allPackagesList.toArray());
+		cboSelectPackage.setEditable(true);
 		cboSelectPackage.addItemListener(new ItemListener() 
 		{
 			public void itemStateChanged(ItemEvent arg0) 
@@ -1081,7 +1083,8 @@ public class MainForm extends JFrame {
 				if (selectedTab == 0) //Agents Tab
 				{
 					resetAgentForm();
-					disableAgentForm();			
+					disableAgentForm();		
+					layeredPaneReassignCustomers.setVisible(false);
 				}
 				else if (selectedTab == 1) //Packages Tab
 				{
